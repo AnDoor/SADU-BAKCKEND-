@@ -1,0 +1,14 @@
+root = "."
+tmp_dir = "tmp"
+
+[build]
+  cmd = "cmd /c \"go build -o tmp\\main.exe ./seed\""
+  bin = "tmp\\main.exe"
+  delay = 1000
+  include_ext = ["go"]
+  exclude_dir = ["tmp"]
+  exclude_unchanged = true
+
+  [misc]
+  clean_on_exit = true
+  
