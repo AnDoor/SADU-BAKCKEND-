@@ -10,7 +10,7 @@ func RegisterAthletesRoutes(r *gin.RouterGroup, athleteHandler *handlers.Athlete
 	r.GET("", athleteHandler.GetAthletes)
 	r.GET("/:id", athleteHandler.GetAthletesByID)
 	r.POST("/create", athleteHandler.CreateNewAthlete)
-	r.PUT("/edit/:id",athleteHandler.EditAthleteByID)
-	r.DELETE("/delete/:id",athleteHandler.DeleteAthleteByID)
+	r.PUT("/edit/:id", athleteHandler.EditAthleteByID)
+	r.DELETE("/delete/:id", athleteHandler.DeleteAthleteByID)
 
 }

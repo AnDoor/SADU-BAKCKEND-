@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -8,15 +9,15 @@ import (
 )
 
 func _GetBareEvents(ctx *gin.Context) {
-	events := []schema.Event{}
-
-	if err := DB.Preload("Teams").Find(&events).Error; err != nil {
-		println(err.Error())
+	var events []schema.Event
+	if err := DB.Select("id, name").Find(&events).Error; err != nil {
+		log.Printf("Error listing events: %v", err)
 		sendError(ctx, http.StatusInternalServerError, "Error listing events")
 		return
 	}
 
-	eventsDTO := []schema.EventGetBareDTO{}
+	// Más eficiente: usa make con capacidad conocida
+	eventsDTO := make([]schema.EventGetBareDTO, 0, len(events))
 	for _, event := range events {
 		eventsDTO = append(eventsDTO, schema.EventGetBareDTO{
 			ID:   schema.RegularIDs(event.ID),
@@ -24,8 +25,7 @@ func _GetBareEvents(ctx *gin.Context) {
 		})
 	}
 
-	sendSucces(ctx, "listing-events", eventsDTO)
-	return
+	//return sendSuccess(ctx, "listing-events", eventsDTO)
 }
 
 func GetBareEvents(ctx *gin.Context) {
