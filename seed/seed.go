@@ -28,12 +28,21 @@ func main() {
 	} else {
 		log.Println("Database seeded successfully")
 	}
-		/**/
+	/**/
 	athleteService := services.AthleteService{DB: db}
 	athleteHandler := handlers.NewAthleteHandler(&athleteService)
 
-	r:= gin.Default()
+	universityService := services.UniversityServices{DB: db}
+	universityHandler := handlers.NewUniversityHandler(&universityService)
+
+	disciplineService := services.DisciplineServices{DB: db}
+	disciplineHandler := handlers.NewDisciplineHandler(&disciplineService)
+
+	r := gin.Default()
 	routes.RegisterAthletesRoutes(r.Group("/athletes"), athleteHandler)
+	routes.RegisterUniversityRoutes(r.Group("/university"), universityHandler)
+	routes.RegisterDisciplines(r.Group("/discipline"), disciplineHandler)
+
 	log.Println("🚀 Server corriendo en http://localhost:8080")
 	r.Run(":8080")
 }

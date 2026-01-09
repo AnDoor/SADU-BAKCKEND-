@@ -45,12 +45,16 @@ func (s *UniversityServices) GetUniversityByID( c*gin.Context) (schema.Universit
 	if err != nil { 
 		return schema.UniversityGetBareDTO{}, fmt.Errorf("ID invalid: %v\n ERROR:%v",universityID,err)
 	}
-	 var universities schema.UniversityGetBareDTO
+	 var universities schema.University
 	if result:= s.DB.First(&universities,universityID); result.Error != nil {
 		return schema.UniversityGetBareDTO{}, fmt.Errorf("Universidad no encontrada: %v", result.Error)
 	}
 		
-	return universities,nil
+	return schema.UniversityGetBareDTO{
+		ID: schema.RegularIDs(universityID),
+		Name: universities.Name,
+		Local: universities.Local,
+	},nil
 }
 
 func (s *UniversityServices) CreateUniversity ( u schema.University) (schema.UniversityGetBareDTO,error){

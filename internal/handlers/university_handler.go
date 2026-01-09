@@ -30,6 +30,7 @@ func (h *UniversityHandler) GetUniversityByIdHandler(ctx *gin.Context) {
 	universities, err := h.service.GetUniversityByID(ctx)
 	if err != nil {
 		sendError(ctx, http.StatusInternalServerError, "ERROR IN HANDLER\n Error listing by ID Universities")
+		return
 	}
 	sendSucces(ctx, "LISTING-UNIVERSITIES-BY-ID", universities)
 }
@@ -43,7 +44,7 @@ func (h *UniversityHandler) CreateUniversityHandler(ctx *gin.Context) {
 
 	createdUniversity, err := h.service.CreateUniversity(newUniversirty)
 	if err != nil {
-		sendError(ctx, http.StatusBadRequest, " "+err.Error())
+		sendError(ctx, http.StatusBadRequest, err.Error())
 		return
 	}
 	sendSucces(ctx, "CREATING-UNIVERSITY-SUCCESFULLY", createdUniversity)

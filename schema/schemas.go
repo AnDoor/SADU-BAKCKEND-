@@ -57,6 +57,7 @@ type Athlete struct {
 	Disciplines     []Discipline `gorm:"many2many:athlete_disciplines;"`
 }
 
+//disciplina deportiva 
 type Discipline struct {
 	gorm.Model
 	Name     string
