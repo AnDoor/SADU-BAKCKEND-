@@ -37,7 +37,7 @@ func (s *UniversityServices) GetAllUniversity() ([]schema.UniversityGetBareDTO, 
 	return universitiesBareDTO, nil
 }
 
-func (s *UniversityServices) GetUniversityByID( c*gin.Context) (schema.UniversityGetBareDTO,error){
+func (s *UniversityServices) GetUniversityByID(c*gin.Context) (schema.UniversityGetBareDTO,error){
 	var id = c.Param("id")
 	
 	universityID,err := strconv.Atoi(id)
@@ -57,7 +57,7 @@ func (s *UniversityServices) GetUniversityByID( c*gin.Context) (schema.Universit
 	},nil
 }
 
-func (s *UniversityServices) CreateUniversity ( u schema.University) (schema.UniversityGetBareDTO,error){
+func (s *UniversityServices) CreateUniversity (u schema.University) (schema.UniversityGetBareDTO,error){
 
 if err := s.DB.Create(&u).Error; err != nil {
 	return schema.UniversityGetBareDTO{},fmt.Errorf("error creando universidad: %v", err)

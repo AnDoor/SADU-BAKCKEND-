@@ -32,6 +32,13 @@ type TeamGetDTO struct {
 	Athletes     []Athlete  `json:"athletes" binding:"required"`
 }
 
+type TeamUpdateDTO struct {
+    Name       *string             `json:"name" binding:"omitempty,min=3"`
+    Regular    *bool               `json:"regular"`
+    Category   *string             `json:"category"`
+    AthleteIDs []Athlete			`json:"athlete_ids"`
+}
+
 type TeamPostDTO struct {
 	ID           RegularIDs   `json:"id"`
 	Name         string       `json:"name" binding:"required"`

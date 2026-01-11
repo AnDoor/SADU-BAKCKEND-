@@ -37,6 +37,8 @@ func (s *AthleteService) GetAthletesByID(c *gin.Context) (schema.Athlete, error)
 	if result.Error != nil {
 		return schema.Athlete{}, result.Error
 	}
+
+	
 	return athlete, nil
 }
 

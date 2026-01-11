@@ -38,11 +38,16 @@ func main() {
 	disciplineService := services.DisciplineServices{DB: db}
 	disciplineHandler := handlers.NewDisciplineHandler(&disciplineService)
 
+	majorService:= services.MajorServices{DB:db}
+	majorHandler := handlers.NewMajorHandler(&majorService)
+
 	r := gin.Default()
 	routes.RegisterAthletesRoutes(r.Group("/athletes"), athleteHandler)
 	routes.RegisterUniversityRoutes(r.Group("/university"), universityHandler)
 	routes.RegisterDisciplines(r.Group("/discipline"), disciplineHandler)
+	routes.RegisterMajorsRoutes(r.Group("/major"), majorHandler)
 
+	
 	log.Println("🚀 Server corriendo en http://localhost:8080")
 	r.Run(":8080")
 }
