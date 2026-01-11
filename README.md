@@ -19,15 +19,16 @@
    **Estructura del proyecto**
 
 ```http
-├── config/             # configuracion de BD y variables de entorno
-├── internal/
-├─────internal/handlers # Controladores hechos con GIN     
-├─────internal/routes   # Rutas y endpoint
-├─────internal/services # Logica de negocio y metodos HTTP      
-├── schemas/            # Schemas GORM
-├── seed/               # Pruebas con datos falsos
-├── src/                # main.go
-├── tmp/            # Build temporal (.gitignore)
+├─SERVICIO-SADU-BACK/
+├── ./config/             # configuracion de BD y variables de entorno
+├── ./internal/
+├─────./internal/handlers # Controladores hechos con GIN     
+├─────./internal/routes   # Rutas y endpoint
+├─────./internal/services # Logica de negocio y metodos HTTP      
+├── ./schemas/            # Schemas GORM
+├── ./seed/               # Pruebas con datos falsos
+├── ./src/                # main.go
+├── ./tmp/            # Build temporal (.gitignore)
 ├── .air.toml       # Multiplataforma
 └── Makefile        # Comandos
   ```
