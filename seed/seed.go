@@ -47,10 +47,22 @@ func main() {
 	routes.RegisterDisciplines(r.Group("/discipline"), disciplineHandler)
 	routes.RegisterMajorsRoutes(r.Group("/major"), majorHandler)
 
-	
+
 	log.Println("🚀 Server corriendo en http://localhost:8080")
 	r.Run(":8080")
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 func seedDatabase(db *gorm.DB) error {
 	log.Println("Seeding database...")

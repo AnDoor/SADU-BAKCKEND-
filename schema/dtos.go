@@ -2,6 +2,16 @@ package schema
 
 import "time"
 
+type MajorCreateDTO struct {
+	Name string `json:"name" binding:"required,min=3,max=100"`
+	AthleteIDs  []RegularIDs `json:"athlete_ids"`
+}
+
+type MajorGetDTO struct {
+	ID   RegularIDs `json:"id"`
+	Name string     `json:"name"`
+}
+
 type DisciplineGetBareDTO struct {
 	ID   RegularIDs `json:"id"`
 	Name string     `json:"name"`
@@ -33,10 +43,10 @@ type TeamGetDTO struct {
 }
 
 type TeamUpdateDTO struct {
-    Name       *string             `json:"name" binding:"omitempty,min=3"`
-    Regular    *bool               `json:"regular"`
-    Category   *string             `json:"category"`
-    AthleteIDs []Athlete			`json:"athlete_ids"`
+	Name       *string   `json:"name" binding:"omitempty,min=3"`
+	Regular    *bool     `json:"regular"`
+	Category   *string   `json:"category"`
+	AthleteIDs []Athlete `json:"athlete_ids"`
 }
 
 type TeamPostDTO struct {
@@ -66,6 +76,14 @@ type TeacherGetDTO struct {
 	GovID       string                 `json:"gov_id"`
 	Disciplines []DisciplineGetBareDTO `json:"disciplines"`
 	// Events      []Event      `json:"events"`
+}
+type TeacherCreateDTO struct {
+    FirstNames string        `json:"first_names" binding:"required,min=2"`
+    LastNames  string        `json:"last_names" binding:"required,min=2"`
+    PhoneNum   string        `json:"phone_num"`
+    Email      string        `json:"email" binding:"omitempty,email"`
+    GovID      string        `json:"gov_id" binding:"required,len=8"`
+    DisciplineIDs []RegularIDs `json:"discipline_ids"`
 }
 
 type TourneyGetBareDTO struct {

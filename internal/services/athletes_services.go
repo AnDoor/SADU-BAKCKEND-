@@ -85,7 +85,7 @@ func (s *AthleteService) DeleteAthlete( c *gin.Context) (error) {
 		return result.Error
 	}
 
-	if result.RowsAffected ==0 {
+	if result.RowsAffected == 0 {
 		return fmt.Errorf("Athlete not found: %d", athleteID)
 
 	}

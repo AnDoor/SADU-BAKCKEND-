@@ -35,7 +35,7 @@ func (h *MajorHandler) GetAllMajorByiDHandler(ctx *gin.Context) {
 }
 func (h *MajorHandler) CreateMajorHandler(ctx *gin.Context) {
 
-	var newMajor schema.Major
+	var newMajor schema.MajorCreateDTO
 	if err := ctx.ShouldBindJSON(&newMajor); err != nil {
 		sendError(ctx, http.StatusBadRequest, "JSON inválido: "+err.Error())
 		return
@@ -52,7 +52,7 @@ func (h *MajorHandler) CreateMajorHandler(ctx *gin.Context) {
 
 func (h *MajorHandler) EditMajorHandler(ctx *gin.Context) {
 
-	var newMajor schema.Major
+	var newMajor schema.MajorCreateDTO
 	if err := ctx.ShouldBindJSON(&newMajor); err != nil {
 		sendError(ctx, http.StatusBadRequest, "JSON inválido: "+err.Error())
 		return

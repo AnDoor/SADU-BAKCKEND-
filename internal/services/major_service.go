@@ -42,8 +42,28 @@ func (s *MajorServices) GetMajorByID(ctx *gin.Context) (schema.Major, error) {
 	return major, nil
 }
 
-func (s *MajorServices) CreateMajor(m schema.Major) (schema.Major, error) {
-	return m, s.DB.Create(&m).Error
+func (s *MajorServices) CreateMajor(m schema.MajorCreateDTO) (schema.MajorGetDTO, error) {
+
+	major := schema.Major{
+		Name: m.Name,
+	}
+
+	result := s.DB.Create(&major)
+	if result.Error != nil {
+		return schema.MajorGetDTO{}, fmt.Errorf("creando carrera: %w", result.Error)
+	}
+	if len(m.AthleteIDs) > 0 {
+		athletes := make([]schema.Athlete, len(m.AthleteIDs))
+		for i, athleteID := range m.AthleteIDs {
+			athletes[i].ID = uint(athleteID)
+		}
+		s.DB.Model(&major).Association("Athletes").Append(athletes)
+	}
+
+	return schema.MajorGetDTO{
+		ID:   schema.RegularIDs(major.ID),
+		Name: major.Name,
+	}, nil
 }
 
 func (s *MajorServices) EditMajor(m schema.Major, ctx *gin.Context) (schema.Major, error) {
