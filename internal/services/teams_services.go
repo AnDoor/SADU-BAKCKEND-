@@ -130,7 +130,7 @@ func (s *TeamServices) Delete(ctx *gin.Context) error {
 		return fmt.Errorf("team %d not found: %w", teamID, err)
 	}
 
-	result := s.DB.Delete(&schema.Team{}, teamID)
+	result := s.DB.Delete(&team, teamID)
 	if result.Error != nil {
 		return fmt.Errorf("deleting team %d: %w", teamID, result.Error)
 	}

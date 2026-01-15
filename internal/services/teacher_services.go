@@ -120,88 +120,85 @@ func (s *TeacherService) CreateTeacher(t schema.TeacherCreateDTO) (schema.Teache
 		Disciplines: mapDisciplines(fullTeacher.Disciplines),
 	}, nil
 }
-func (s *TeacherService) EditTeacher(ctx *gin.Context) (schema.TeacherGetDTO, error){
+func (s *TeacherService) EditTeacher(ctx *gin.Context) (schema.TeacherGetDTO, error) {
 	id := ctx.Param("id")
-    teacherID, err := strconv.Atoi(id)
-    if err != nil {
-        return schema.TeacherGetDTO{}, fmt.Errorf("ID inválido: %w", err)
-    }
+	teacherID, err := strconv.Atoi(id)
+	if err != nil {
+		return schema.TeacherGetDTO{}, fmt.Errorf("ID inválido: %w", err)
+	}
 
 	var input schema.TeacherGetDTO
-    if err := ctx.ShouldBindJSON(&input); err != nil {
-        return schema.TeacherGetDTO{}, fmt.Errorf("datos inválidos: %w", err)
-    }
+	if err := ctx.ShouldBindJSON(&input); err != nil {
+		return schema.TeacherGetDTO{}, fmt.Errorf("datos inválidos: %w", err)
+	}
 	var teacher schema.Teacher
-    result := s.DB.Preload("Disciplines").First(&teacher, teacherID)
-    if result.Error != nil {
-        return schema.TeacherGetDTO{}, fmt.Errorf("profesor %d no encontrado", teacherID)
-    }
+	result := s.DB.Preload("Disciplines").First(&teacher, teacherID)
+	if result.Error != nil {
+		return schema.TeacherGetDTO{}, fmt.Errorf("profesor %d no encontrado", teacherID)
+	}
 
- 
-    if input.FirstNames != "" {
-        teacher.FirstNames = input.FirstNames
-    }
-    if input.LastNames != "" {
-        teacher.LastNames = input.LastNames
-    }
-    if input.PhoneNum != "" {
-        teacher.PhoneNum = input.PhoneNum
-    }
-    if input.Email != "" {
-        teacher.Email = input.Email
-    }
-    if input.GovID != "" {
-        teacher.GovID = input.GovID
-    }
+	if input.FirstNames != "" {
+		teacher.FirstNames = input.FirstNames
+	}
+	if input.LastNames != "" {
+		teacher.LastNames = input.LastNames
+	}
+	if input.PhoneNum != "" {
+		teacher.PhoneNum = input.PhoneNum
+	}
+	if input.Email != "" {
+		teacher.Email = input.Email
+	}
+	if input.GovID != "" {
+		teacher.GovID = input.GovID
+	}
 	if len(input.Disciplines) > 0 {
-        disciplineIDs := make([]uint, len(input.Disciplines))
-        for i, disc := range input.Disciplines {
-            disciplineIDs[i] = uint(disc.ID)
-        }
-        
- 
-        s.DB.Model(&teacher).Association("Disciplines").Clear()
-        disciplines := make([]schema.Discipline, len(disciplineIDs))
-        for i, discID := range disciplineIDs {
-            disciplines[i].ID = discID
-        }
-        s.DB.Model(&teacher).Association("Disciplines").Append(disciplines)
-    }
+		disciplineIDs := make([]uint, len(input.Disciplines))
+		for i, disc := range input.Disciplines {
+			disciplineIDs[i] = uint(disc.ID)
+		}
 
-    if err := s.DB.Save(&teacher).Error; err != nil {
-        return schema.TeacherGetDTO{}, fmt.Errorf("actualizando profesor: %w", err)
-    }
+		s.DB.Model(&teacher).Association("Disciplines").Clear()
+		disciplines := make([]schema.Discipline, len(disciplineIDs))
+		for i, discID := range disciplineIDs {
+			disciplines[i].ID = discID
+		}
+		s.DB.Model(&teacher).Association("Disciplines").Append(disciplines)
+	}
 
-    return schema.TeacherGetDTO{
-        ID:          schema.RegularIDs(teacher.ID),
-        FirstNames:  teacher.FirstNames,
-        LastNames:   teacher.LastNames,
-        PhoneNum:    teacher.PhoneNum,
-        Email:       teacher.Email,
-        GovID:       teacher.GovID,
-        Disciplines: mapDisciplines(teacher.Disciplines),
-    }, nil
+	if err := s.DB.Save(&teacher).Error; err != nil {
+		return schema.TeacherGetDTO{}, fmt.Errorf("actualizando profesor: %w", err)
+	}
+
+	return schema.TeacherGetDTO{
+		ID:          schema.RegularIDs(teacher.ID),
+		FirstNames:  teacher.FirstNames,
+		LastNames:   teacher.LastNames,
+		PhoneNum:    teacher.PhoneNum,
+		Email:       teacher.Email,
+		GovID:       teacher.GovID,
+		Disciplines: mapDisciplines(teacher.Disciplines),
+	}, nil
 }
-func (s *TeacherService) DeleteTeacher(ctx *gin.Context) error{
+func (s *TeacherService) DeleteTeacher(ctx *gin.Context) error {
 	id := ctx.Param("id")
-    teacherID, err := strconv.Atoi(id)
-    if err != nil {
-        return fmt.Errorf("ID inválido: %w", err)
-    }
+	teacherID, err := strconv.Atoi(id)
+	if err != nil {
+		return fmt.Errorf("ID inválido: %w", err)
+	}
 
-	 var teacher schema.Teacher
-    result := s.DB.First(&teacher, teacherID)
-    if result.Error != nil {
-        return fmt.Errorf("profesor %d no encontrado", teacherID)
-    }
+	var teacher schema.Teacher
+	result := s.DB.First(&teacher, teacherID)
+	if result.Error != nil {
+		return fmt.Errorf("profesor %d no encontrado", teacherID)
+	}
 
-    
-    result = s.DB.Delete(&schema.Teacher{}, teacherID)
-    if result.Error != nil {
-        return fmt.Errorf("error eliminando profesor %d: %w", teacherID, result.Error)
-    }
-    if result.RowsAffected == 0 {
-        return fmt.Errorf("profesor %d no encontrado", teacherID)
-    }
+	result = s.DB.Delete(&schema.Teacher{}, teacherID)
+	if result.Error != nil {
+		return fmt.Errorf("error eliminando profesor %d: %w", teacherID, result.Error)
+	}
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("profesor %d no encontrado", teacherID)
+	}
 	return nil
 }
