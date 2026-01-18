@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/brianvoe/gofakeit/v7"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"uneg.edu.ve/servicio-sadu-back/config"
 	"uneg.edu.ve/servicio-sadu-back/internal/handlers"
@@ -28,7 +29,7 @@ func main() {
 	} else {
 		log.Println("Database seeded successfully")
 	}
-	/**/
+
 	athleteService := services.AthleteService{DB: db}
 	athleteHandler := handlers.NewAthleteHandler(&athleteService)
 
@@ -38,31 +39,30 @@ func main() {
 	disciplineService := services.DisciplineServices{DB: db}
 	disciplineHandler := handlers.NewDisciplineHandler(&disciplineService)
 
-	majorService:= services.MajorServices{DB:db}
+	majorService := services.MajorServices{DB: db}
 	majorHandler := handlers.NewMajorHandler(&majorService)
 
 	r := gin.Default()
+	//configuracion de CORS
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:8080", "https://dominio.uneg.edu.ve"}, // "https://dominio.uneg.edu.ve" es cuando tengamos algun dominio ya puesto
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
+
+
+	/*rutas*/
 	routes.RegisterAthletesRoutes(r.Group("/athletes"), athleteHandler)
 	routes.RegisterUniversityRoutes(r.Group("/university"), universityHandler)
 	routes.RegisterDisciplines(r.Group("/discipline"), disciplineHandler)
 	routes.RegisterMajorsRoutes(r.Group("/major"), majorHandler)
 
-
 	log.Println("🚀 Server corriendo en http://localhost:8080")
 	r.Run(":8080")
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 func seedDatabase(db *gorm.DB) error {
 	log.Println("Seeding database...")

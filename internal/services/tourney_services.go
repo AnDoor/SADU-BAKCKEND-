@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"uneg.edu.ve/servicio-sadu-back/config"
+	"uneg.edu.ve/servicio-sadu-back/helpers"
 	"uneg.edu.ve/servicio-sadu-back/schema"
 )
 
@@ -16,22 +17,6 @@ type TourneyServices struct {
 
 func NewTourneyServices() *TourneyServices {
 	return &TourneyServices{DB: config.DB}
-}
-
-func mapEventsBare(events []schema.Event) []schema.EventGetBareDTO {
-    dtos := make([]schema.EventGetBareDTO, len(events))
-    for i, event := range events {
-        dtos[i] = schema.EventGetBareDTO{
-            ID:             schema.RegularIDs(event.ID),
-            Name:           event.Name,
-            Date:           event.Date,
-            Status:         event.Status,
-            HomePoints:     event.HomePoints,
-            OppositePoints: event.OppositePoints,
-
-        }
-    }
-    return dtos
 }
 
 func (s *TourneyServices) GetAllTourney() ([]schema.TourneyGetBareDTO, error) {
@@ -59,18 +44,55 @@ func (s *TourneyServices) GetTourneyByID(c *gin.Context) (schema.TourneyGetFullD
 
 	}
 	result := s.DB.Preload("Events").First(&tourney, tourneyID).Error
-	if result.Error != nil {
+	if result != nil {
 		return schema.TourneyGetFullDTO{}, result
 	}
 
 	return schema.TourneyGetFullDTO{
 		ID:     schema.RegularIDs(tourneyID),
 		Name:   tourney.Name,
-		 Events: mapEventsBare(tourney.Events),
+		Events: helpers.MapEventsBare(tourney.Events),
 	}, nil
 }
-func (s *TourneyServices) CreateTourney(t schema.Tourney) (schema.TourneyGetFullDTO, error)
-func (s *TourneyServices) UpdateTourney(t schema.Tourney, c *gin.Context) (schema.TourneyGetFullDTO, error)
+func (s *TourneyServices) CreateTourney(t schema.Tourney) (schema.TourneyGetFullDTO, error) {
+
+	result := s.DB.Create(&t)
+	if result.Error != nil || result.RowsAffected == 0 {
+		return schema.TourneyGetFullDTO{}, result.Error
+	}
+
+	return schema.TourneyGetFullDTO{
+		ID:     schema.RegularIDs(t.ID),
+		Name:   t.Name,
+		Events: helpers.MapEventsBare(t.Events),
+	}, nil
+}
+func (s *TourneyServices) UpdateTourney(t schema.Tourney, c *gin.Context) (schema.TourneyGetFullDTO, error) {
+	var id = c.Param("id")
+	tourneyID, err := strconv.Atoi(id)
+
+	if err != nil {
+		return schema.TourneyGetFullDTO{}, fmt.Errorf("invalid team ID: %w", err)
+	}
+
+result := s.DB.Model(&schema.Tourney{}).Where("id = ?", tourneyID).Updates(&t)
+
+	if result.Error != nil || result.RowsAffected == 0{
+		return schema.TourneyGetFullDTO{}, fmt.Errorf("tourney not found or update failed: %w", result.Error)
+	}
+
+	var updateTourney schema.Tourney
+	if err := s.DB.Preload("Events").First(&updateTourney, tourneyID).Error; err != nil {
+		return schema.TourneyGetFullDTO{}, err
+	}
+		dto := schema.TourneyGetFullDTO{
+			ID: schema.RegularIDs(updateTourney.ID),
+			Name: updateTourney.Name,
+			Events: helpers.MapEventsBare(updateTourney.Events),
+		}
+	return dto, nil	
+	
+}
 
 func (s *TourneyServices) DeleteTourney(c *gin.Context) error {
 	var id = c.Param("id")
