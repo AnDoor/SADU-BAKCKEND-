@@ -16,3 +16,14 @@ func MapEventsBare(events []schema.Event) []schema.EventGetBareDTO {
 	}
 	return dtos
 }
+
+func MapDisciplines(disciplines []schema.Discipline) []schema.DisciplineGetBareDTO {
+	dtos := make([]schema.DisciplineGetBareDTO, len(disciplines))
+	for i, disc := range disciplines {
+		dtos[i] = schema.DisciplineGetBareDTO{
+			ID:   schema.RegularIDs(disc.ID),
+			Name: disc.Name,
+		}
+	}
+	return dtos
+}

@@ -4,15 +4,16 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"uneg.edu.ve/servicio-sadu-back/helpers"
 	"uneg.edu.ve/servicio-sadu-back/schema"
 )
 
 func GetTeams(ctx *gin.Context) {
 	teams := []schema.Team{}
 
-	if err := DB.Preload("Athletes").Find(&teams).Error; err != nil {
+	if err := helpers.DB.Preload("Athletes").Find(&teams).Error; err != nil {
 		println(err.Error())
-		sendError(ctx, http.StatusInternalServerError, "Error listing teams")
+		helpers.SendError(ctx, http.StatusInternalServerError, "Error listing teams")
 		return
 	}
 
@@ -29,7 +30,7 @@ func GetTeams(ctx *gin.Context) {
 		})
 	}
 
-	sendSucces(ctx, "listing-teams", teamsDTO)
+	helpers.SendSucces(ctx, "listing-teams", teamsDTO)
 	return
 }
 
@@ -39,15 +40,15 @@ func AddTeams(ctx *gin.Context) {
 
 	if err := ctx.BindJSON(&teamDTO); err != nil {
 		println(err.Error())
-		sendError(ctx, http.StatusBadRequest, "Error binding json")
+		helpers.SendError(ctx, http.StatusBadRequest, "Error binding json")
 		return
 	}
 
 	athletes := []schema.Athlete{}
 	for _, athleteID := range teamDTO.AthleteIDs {
 		athlete := schema.Athlete{}
-		if err := DB.Where("id = ?", athleteID).First(&athlete).Error; err != nil {
-			sendError(ctx, http.StatusInternalServerError, "Error finding athletes")
+		if err := helpers.DB.Where("id = ?", athleteID).First(&athlete).Error; err != nil {
+			helpers.SendError(ctx, http.StatusInternalServerError, "Error finding athletes")
 			return
 		}
 		athletes = append(athletes, athlete)
@@ -62,9 +63,9 @@ func AddTeams(ctx *gin.Context) {
 		Athletes:     athletes,
 	}
 
-	if err := DB.Create(&team).Error; err != nil {
-		sendError(ctx, http.StatusInternalServerError, "Error inserting team")
+	if err := helpers.DB.Create(&team).Error; err != nil {
+		helpers.SendError(ctx, http.StatusInternalServerError, "Error inserting team")
 		return
 	}
-	sendSucces(ctx, "adding-team", team)
+	helpers.SendSucces(ctx, "adding-team", team)
 }

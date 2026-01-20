@@ -1,9 +1,12 @@
 package handlers
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+	"uneg.edu.ve/servicio-sadu-back/helpers"
 	"uneg.edu.ve/servicio-sadu-back/internal/services"
 	"uneg.edu.ve/servicio-sadu-back/schema"
 )
@@ -15,6 +18,40 @@ type TourneyHandler struct {
 func NewTourneyHandler(service *services.TourneyServices) *TourneyHandler {
 	return &TourneyHandler{service: service}
 }
+
+func (h *TourneyHandler) GetAllTourneyHandler(ctx *gin.Context) {
+	tourneys, err := h.service.GetAllTourney()
+	if err != nil {
+		helpers.SendError(ctx, http.StatusInternalServerError, "ERROR IN HANDLER\n Error listing TOURNIES")
+	}
+	helpers.SendSucces(ctx, "LISTING-TOURNIES", tourneys)
+}
+
+func (h *TourneyHandler) GetTourneyByIdHandler(ctx *gin.Context) {
+	tourney, err := h.service.GetTourneyByID(ctx)
+	if err != nil {
+		helpers.SendError(ctx, http.StatusInternalServerError, "ERROR IN HANDLER\n Error listing by ID TOURNEYS")
+		return
+	}
+	helpers.SendSucces(ctx, "LISTING-TOURNEY-BY-ID", tourney)
+}
+
+func (h *TourneyHandler) CreateUniversityHandler(ctx *gin.Context) {
+	var newTourney schema.Tourney
+	if err := ctx.ShouldBindJSON(&newTourney); err != nil {
+		helpers.SendError(ctx, http.StatusBadRequest, "JSON inválido: "+err.Error())
+		return
+	}
+
+	createdTourney, err := h.service.CreateTourney(newTourney)
+	if err != nil {
+		helpers.SendError(ctx, http.StatusBadRequest, err.Error())
+		return
+	}
+	helpers.SendSucces(ctx, "CREATING-TOURNEY-SUCCESFULLY", createdTourney)
+
+}
+
 func (h *TourneyHandler) UpdateTourneyHandler(c *gin.Context) {
 
 	var t schema.Tourney
@@ -30,4 +67,17 @@ func (h *TourneyHandler) UpdateTourneyHandler(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"data": dto})
 
+}
+
+func (h *TourneyHandler) DeleteTourneyHandler(ctx *gin.Context) {
+	if err := h.service.DeleteTourney(ctx); err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			helpers.SendError(ctx, http.StatusNotFound, "Torneo no encontrada")
+		} else {
+			helpers.SendError(ctx, http.StatusInternalServerError, err.Error())
+		}
+		return
+	}
+
+	helpers.SendSucces(ctx, "Deleting Tourney succesfully", "")
 }

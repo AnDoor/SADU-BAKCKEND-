@@ -5,14 +5,15 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"uneg.edu.ve/servicio-sadu-back/helpers"
 	"uneg.edu.ve/servicio-sadu-back/schema"
 )
 
 func _GetBareEvents(ctx *gin.Context) {
 	var events []schema.Event
-	if err := DB.Select("id, name").Find(&events).Error; err != nil {
+	if err := helpers.DB.Select("id, name").Find(&events).Error; err != nil {
 		log.Printf("Error listing events: %v", err)
-		sendError(ctx, http.StatusInternalServerError, "Error listing events")
+		helpers.SendError(ctx, http.StatusInternalServerError, "Error listing events")
 		return
 	}
 
@@ -25,14 +26,14 @@ func _GetBareEvents(ctx *gin.Context) {
 		})
 	}
 
-	//return sendSuccess(ctx, "listing-events", eventsDTO)
+	//return helpers.SendSuccess(ctx, "listing-events", eventsDTO)
 }
 
 func GetBareEvents(ctx *gin.Context) {
 	events := []schema.Event{}
 
 	// Preload all the necessary relationships for EventGetBareDTO
-	if err := DB.Preload("HomeTeam").
+	if err := helpers.DB.Preload("HomeTeam").
 		Preload("HomeTeam.University").
 		Preload("HomeTeam.Athletes").
 		Preload("OppositeTeam").
@@ -43,7 +44,7 @@ func GetBareEvents(ctx *gin.Context) {
 		Preload("Discipline").
 		Find(&events).Error; err != nil {
 		println(err.Error())
-		sendError(ctx, http.StatusInternalServerError, "Error listing events")
+		helpers.SendError(ctx, http.StatusInternalServerError, "Error listing events")
 		return
 	}
 
@@ -118,6 +119,6 @@ func GetBareEvents(ctx *gin.Context) {
 		eventsDTO = append(eventsDTO, eventDTO)
 	}
 
-	sendSucces(ctx, "listing-events", eventsDTO)
+	helpers.SendSucces(ctx, "listing-events", eventsDTO)
 	return
 }

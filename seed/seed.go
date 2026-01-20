@@ -42,6 +42,9 @@ func main() {
 	majorService := services.MajorServices{DB: db}
 	majorHandler := handlers.NewMajorHandler(&majorService)
 
+	tourneyService := services.TourneyServices{DB: db}
+	tourneyHandler := handlers.NewTourneyHandler(&tourneyService)
+
 	r := gin.Default()
 	//configuracion de CORS
 	r.Use(cors.New(cors.Config{
@@ -59,8 +62,9 @@ func main() {
 	routes.RegisterUniversityRoutes(r.Group("/university"), universityHandler)
 	routes.RegisterDisciplines(r.Group("/discipline"), disciplineHandler)
 	routes.RegisterMajorsRoutes(r.Group("/major"), majorHandler)
+	routes.RegisterTourney(r.Group("/tourney" ), tourneyHandler)
 
-	log.Println("🚀 Server corriendo en http://localhost:8080")
+	log.Println(" Server corriendo en http://localhost:8080")
 	r.Run(":8080")
 }
 

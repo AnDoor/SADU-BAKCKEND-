@@ -2,10 +2,6 @@ package schema
 
 import "time"
 
-type MajorCreateDTO struct {
-	Name string `json:"name" binding:"required,min=3,max=100"`
-	AthleteIDs  []RegularIDs `json:"athlete_ids"`
-}
 
 type MajorGetDTO struct {
 	ID   RegularIDs `json:"id"`

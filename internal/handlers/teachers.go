@@ -4,14 +4,15 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"uneg.edu.ve/servicio-sadu-back/helpers"
 	"uneg.edu.ve/servicio-sadu-back/schema"
 )
 
 func GetTeachers(ctx *gin.Context) {
 	teachers := []schema.Teacher{}
 
-	if err := DB.Find(&teachers).Error; err != nil {
-		sendError(ctx, http.StatusInternalServerError, "Error listing teachers")
+	if err := helpers.DB.Find(&teachers).Error; err != nil {
+		helpers.SendError(ctx, http.StatusInternalServerError, "Error listing teachers")
 		return
 	}
 
@@ -20,8 +21,8 @@ func GetTeachers(ctx *gin.Context) {
 		var disciplines []schema.Discipline
 		teacherID := schema.RegularIDs(teacher.ID)
 
-		if err := DB.Where("id = ?", teacherID).Find(&disciplines).Error; err != nil {
-			sendError(ctx, http.StatusInternalServerError, "Error finding teachers")
+		if err := helpers.DB.Where("id = ?", teacherID).Find(&disciplines).Error; err != nil {
+			helpers.SendError(ctx, http.StatusInternalServerError, "Error finding teachers")
 			return
 		}
 		teachers[i].Disciplines = disciplines
@@ -37,5 +38,5 @@ func GetTeachers(ctx *gin.Context) {
 		}
 		teachersDTO = append(teachersDTO, teacherDTO)
 	}
-	sendSucces(ctx, "listing-teachers", teachersDTO)
+	helpers.SendSucces(ctx, "listing-teachers", teachersDTO)
 }
