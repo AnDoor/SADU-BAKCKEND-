@@ -45,6 +45,9 @@ func main() {
 	tourneyService := services.TourneyServices{DB: db}
 	tourneyHandler := handlers.NewTourneyHandler(&tourneyService)
 
+	teacherService := services.TeacherService{DB: db}
+	teacherHandler := handlers.NewTeacherHandler(&teacherService)
+
 	r := gin.Default()
 	//configuracion de CORS
 	r.Use(cors.New(cors.Config{
@@ -56,13 +59,13 @@ func main() {
 		MaxAge:           12 * time.Hour,
 	}))
 
-
 	/*rutas*/
 	routes.RegisterAthletesRoutes(r.Group("/athletes"), athleteHandler)
 	routes.RegisterUniversityRoutes(r.Group("/university"), universityHandler)
 	routes.RegisterDisciplines(r.Group("/discipline"), disciplineHandler)
 	routes.RegisterMajorsRoutes(r.Group("/major"), majorHandler)
-	routes.RegisterTourney(r.Group("/tourney" ), tourneyHandler)
+	routes.RegisterTourney(r.Group("/tourney"), tourneyHandler)
+	routes.RegisterTeacherRoutes(r.Group("/teachers"), teacherHandler)
 
 	log.Println(" Server corriendo en http://localhost:8080")
 	r.Run(":8080")
@@ -156,6 +159,7 @@ func seedDatabase(db *gorm.DB) error {
 			FirstNames:      faker.FirstName(),
 			LastNames:       faker.LastName() + " " + faker.LastName(),
 			PhoneNum:        faker.Phone(),
+			Inscripted:      faker.Bool(),
 			Email:           faker.Email(),
 			Gender:          gender,
 			InscriptionDate: faker.DateRange(time.Now().AddDate(-2, 0, 0), time.Now()),

@@ -68,7 +68,7 @@ func (d *DisciplineServices) CreateDiscipline(dis schema.Discipline) (schema.Dis
 }
 
 func (d *DisciplineServices) EditDiscipline(dis schema.Discipline, ctx *gin.Context) (schema.Discipline, error) {
-
+	
 	var id = ctx.Param("id")
 	disciplineID, err := strconv.Atoi(id)
 	if err != nil {

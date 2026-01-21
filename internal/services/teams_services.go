@@ -19,7 +19,7 @@ func NewTeamServices() *TeamServices {
 }
 
 func (s *TeamServices) GetAllTeam() ([]schema.TeamGetDTO, error) {
-	var teams []schema.TeamGetDTO
+	var teams []schema.Team
 	if err := s.DB.Preload("Athletes").Find(&teams).Error; err != nil {
 		return nil, fmt.Errorf("listing teams: %w", err)
 	}

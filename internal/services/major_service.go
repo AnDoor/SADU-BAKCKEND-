@@ -31,7 +31,7 @@ func (s *MajorServices) GetMajorByID(ctx *gin.Context) (schema.Major, error) {
 	}
 	var major schema.Major
 
-	result := s.DB.First(&major, majorID)
+	result := s.DB.Preload("Athletes").First(&major, majorID)
 	if result.Error != nil {
 		return schema.Major{}, result.Error
 	}

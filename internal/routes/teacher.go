@@ -5,9 +5,10 @@ import (
 	"uneg.edu.ve/servicio-sadu-back/internal/handlers"
 )
 
-func RegisterTeachersRoutes(r *gin.Engine) {
-	teachers := r.Group("/teachers")
-	{
-		teachers.GET("/", handlers.GetTeachers)
-	}
+func RegisterTeacherRoutes(r *gin.RouterGroup, teacherHandler *handlers.TeacherHandler) {
+	r.GET("", teacherHandler.GetAllTeachersHandler)
+	r.GET("/:id", teacherHandler.GetTeacherByIdHandler)
+	r.POST("/create", teacherHandler.CreateTeacherHandler)
+	r.PUT("/edit/:id", teacherHandler.UpdateTeacherHandler)
+	r.DELETE("/delete/:id", teacherHandler.DeleteTeacherHandler)
 }

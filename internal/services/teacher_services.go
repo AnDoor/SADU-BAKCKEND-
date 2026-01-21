@@ -19,7 +19,7 @@ func NewTeacherService() *TeacherService {
 	return &TeacherService{DB: config.DB}
 }
 
-func (s *TeacherService) GetTeachers() ([]schema.TeacherGetDTO, error) {
+func (s *TeacherService) GetTeachers() ([]schema.TeacherGetBareDTO, error) {
 	var teachers []schema.Teacher
 
 	if err := s.DB.Preload("Disciplines").Find(&teachers).Error; err != nil {
@@ -27,15 +27,13 @@ func (s *TeacherService) GetTeachers() ([]schema.TeacherGetDTO, error) {
 		return nil, err
 	}
 
-	teachersDTO := make([]schema.TeacherGetDTO, len(teachers))
+	teachersDTO := make([]schema.TeacherGetBareDTO, len(teachers))
 
 	for i, teacher := range teachers {
-		teachersDTO[i] = schema.TeacherGetDTO{
+		teachersDTO[i] = schema.TeacherGetBareDTO{
 			ID:          schema.RegularIDs(teacher.ID),
 			FirstNames:  teacher.FirstNames,
 			LastNames:   teacher.LastNames,
-			PhoneNum:    teacher.PhoneNum,
-			Email:       teacher.Email,
 			GovID:       teacher.GovID,
 			Disciplines: helpers.MapDisciplines(teacher.Disciplines),
 		}
@@ -43,28 +41,30 @@ func (s *TeacherService) GetTeachers() ([]schema.TeacherGetDTO, error) {
 	return teachersDTO, nil
 
 }
-func (s *TeacherService) GetTeacherById(ctx *gin.Context) (schema.TeacherGetBareDTO, error) {
+func (s *TeacherService) GetTeacherById(ctx *gin.Context) (schema.TeacherGetDTO, error) {
 	var id = ctx.Param("id")
 	teacherId, err := strconv.Atoi(id)
 
 	if err != nil {
-		return schema.TeacherGetBareDTO{}, fmt.Errorf("ID INVALID: %w", err)
+		return schema.TeacherGetDTO{}, fmt.Errorf("ID INVALID: %w", err)
 	}
 	var teacher schema.Teacher
 	result := s.DB.Preload("Disciplines").First(&teacher, teacherId)
 	if result.Error != nil {
-		return schema.TeacherGetBareDTO{}, fmt.Errorf("profesor %d no encontrado: %w", teacherId, result.Error)
+		return schema.TeacherGetDTO{}, fmt.Errorf("profesor %d no encontrado: %w", teacherId, result.Error)
 	}
-	return schema.TeacherGetBareDTO{
+	return schema.TeacherGetDTO{
 		ID:          schema.RegularIDs(teacherId),
 		FirstNames:  teacher.FirstNames,
 		LastNames:   teacher.LastNames,
+		PhoneNum:    teacher.PhoneNum,
+		Email:       teacher.Email,
 		GovID:       teacher.GovID,
 		Disciplines: helpers.MapDisciplines(teacher.Disciplines),
 	}, nil
 }
 func (s *TeacherService) CreateTeacher(t schema.TeacherCreateDTO) (schema.TeacherGetDTO, error) {
-	//  Validar disciplinas
+
 	for _, discID := range t.DisciplineIDs {
 		var disc schema.Discipline
 		if err := s.DB.First(&disc, uint(discID)).Error; err != nil {
@@ -81,100 +81,27 @@ func (s *TeacherService) CreateTeacher(t schema.TeacherCreateDTO) (schema.Teache
 		GovID:      t.GovID,
 	}
 
-	//  Guardar
-	 if err := s.DB.Omit("Events", "Disciplines").Create(&teacher).Error; err != nil {
+	if err := s.DB.Create(&teacher).Error; err != nil {
         return schema.TeacherGetDTO{}, fmt.Errorf("creando profesor: %w", err)
     }
 
-	 //  Asignar disciplinas many2many
-    if len(t.DisciplineIDs) > 0 {
-        disciplines := make([]schema.Discipline, len(t.DisciplineIDs))
+	//  Asignar disciplinas many2many
+	if len(t.DisciplineIDs) > 0 {
+		disciplineIDs := make([]uint, len(t.DisciplineIDs))
         for i, discID := range t.DisciplineIDs {
-            disciplines[i].ID = uint(discID)
+            disciplineIDs[i] = uint(discID)
         }
-        if err := s.DB.Model(&teacher).Association("Disciplines").Append(disciplines).Error; err != nil {
-            return schema.TeacherGetDTO{}, fmt.Errorf("asignando disciplinas: %w", err)
-        }
-    }
+		if err := s.DB.Model(&teacher).Association("Disciplines").Replace(disciplineIDs).Error; err != nil {
+			return schema.TeacherGetDTO{}, fmt.Errorf("asignando disciplinas: %w", err)
+		}
+	}
 
-    // Recargar con Preload para DTO completo
-    var fullTeacher schema.Teacher
-    if err := s.DB.Preload("Disciplines").First(&fullTeacher, teacher.ID).Error; err != nil {
+	if err := s.DB.Preload("Disciplines").First(&teacher, teacher.ID).Error; err != nil {
         return schema.TeacherGetDTO{}, fmt.Errorf("cargando profesor completo: %w", err)
     }
 
-    // Retornar DTO completo
-    return schema.TeacherGetDTO{
-        ID:          schema.RegularIDs(fullTeacher.ID),
-        FirstNames:  fullTeacher.FirstNames,
-        LastNames:   fullTeacher.LastNames,
-        PhoneNum:    fullTeacher.PhoneNum,
-        Email:       fullTeacher.Email,
-        GovID:       fullTeacher.GovID,
-        Disciplines: helpers.MapDisciplines(fullTeacher.Disciplines),
-    }, nil
-
-}
-func (s *TeacherService) EditTeacher(ctx *gin.Context) (schema.TeacherGetDTO, error) {
-	id := ctx.Param("id")
-	teacherID, err := strconv.Atoi(id)
-	if err != nil {
-		return schema.TeacherGetDTO{}, fmt.Errorf("ID inválido: %w", err)
-	}
-
-	var input schema.TeacherCreateDTO
-	if err := ctx.ShouldBindJSON(&input); err != nil {
-		return schema.TeacherGetDTO{}, fmt.Errorf("datos inválidos: %w", err)
-	}
-
-
-	var teacher schema.Teacher
-	result := s.DB.Preload("Disciplines").First(&teacher, teacherID)
-	if result.Error != nil {
-		return schema.TeacherGetDTO{}, fmt.Errorf("profesor %d no encontrado", teacherID)
-	}
-
-	//validar disciplinas 
-	for _, discID := range input.DisciplineIDs {
-        var disc schema.Discipline
-        if err := s.DB.First(&disc, uint(discID)).Error; err != nil {
-            return schema.TeacherGetDTO{}, fmt.Errorf("disciplina %d no existe", discID)
-        }
-    }
-
-	//Actualizar campos (solo si vienen en request)
-    updates := make(map[string]interface{})
-    if input.FirstNames != "" { updates["first_names"] = input.FirstNames }
-    if input.LastNames != "" { updates["last_names"] = input.LastNames }
-    if input.PhoneNum != "" { updates["phone_num"] = input.PhoneNum }
-    if input.Email != "" { updates["email"] = input.Email }
-    if input.GovID != "" { updates["gov_id"] = input.GovID }
-
-	if len(updates) > 0 {
-        if err := s.DB.Model(&teacher).Updates(updates).Error; err != nil {
-            return schema.TeacherGetDTO{}, fmt.Errorf("actualizando datos profesor: %w", err)
-        }
-    }
-
-    //  Reemplazar disciplinas (Clear + Append = Replace)
-    if len(input.DisciplineIDs) > 0 {
-        disciplines := make([]schema.Discipline, len(input.DisciplineIDs))
-        for i, discID := range input.DisciplineIDs {
-            disciplines[i].ID = uint(discID)
-        }
-   
-        if err := s.DB.Model(&teacher).Association("Disciplines").Replace(disciplines).Error; err != nil {
-            return schema.TeacherGetDTO{}, fmt.Errorf("actualizando disciplinas: %w", err)
-        }
-    }
-
-    //  Recargar con Preload para respuesta completa
-    if err := s.DB.Preload("Disciplines").First(&teacher, teacherID).Error; err != nil {
-        return schema.TeacherGetDTO{}, fmt.Errorf("recargando profesor: %w", err)
-    }
-
-    //  Retornar DTO completo
-    return schema.TeacherGetDTO{
+	// Retornar DTO completo
+	return schema.TeacherGetDTO{
         ID:          schema.RegularIDs(teacher.ID),
         FirstNames:  teacher.FirstNames,
         LastNames:   teacher.LastNames,
@@ -184,6 +111,61 @@ func (s *TeacherService) EditTeacher(ctx *gin.Context) (schema.TeacherGetDTO, er
         Disciplines: helpers.MapDisciplines(teacher.Disciplines),
     }, nil
 }
+
+func (s *TeacherService) EditTeacher(ctx *gin.Context, t schema.Teacher) (schema.Teacher, error) {
+ 
+    id := ctx.Param("id")
+    teacherID, err := strconv.Atoi(id)
+    if err != nil {
+        return schema.Teacher{}, fmt.Errorf("ID inválido: %w", err)
+    }
+
+   
+    var teacher schema.Teacher
+    result := s.DB.Preload("Disciplines").First(&teacher, teacherID)
+    if result.Error != nil {
+        return schema.Teacher{}, fmt.Errorf("profesor %d no encontrado: %w", teacherID, result.Error)
+    }
+
+  
+    for _, discipline := range t.Disciplines {
+        var disc schema.Discipline
+        if err := s.DB.First(&disc, discipline.ID).Error; err != nil {
+            return schema.Teacher{}, fmt.Errorf("disciplina %d no existe: %w", discipline.ID, err)
+        }
+    }
+
+   
+    teacher.FirstNames = t.FirstNames
+    teacher.LastNames  = t.LastNames
+    teacher.PhoneNum   = t.PhoneNum
+    teacher.Email      = t.Email
+    teacher.GovID      = t.GovID
+
+    // 5. Guardar + reemplazar disciplinas
+    if err := s.DB.Save(&teacher).Error; err != nil {
+        return schema.Teacher{}, fmt.Errorf("guardando profesor: %w", err)
+    }
+
+    if len(t.Disciplines) > 0 {
+        disciplineIDs := make([]uint, len(t.Disciplines))
+        for i, disc := range t.Disciplines {
+            disciplineIDs[i] = disc.ID
+        }
+        if err := s.DB.Model(&teacher).Association("Disciplines").Replace(disciplineIDs); err != nil {
+            return schema.Teacher{}, fmt.Errorf("actualizando disciplinas: %w", err)
+        }
+    }
+
+
+    if err := s.DB.Preload("Events").Preload("Disciplines").First(&teacher, teacherID).Error; err != nil {
+        return schema.Teacher{}, fmt.Errorf("recargando profesor: %w", err)
+    }
+
+    return teacher, nil  
+}
+
+
 func (s *TeacherService) DeleteTeacher(ctx *gin.Context) error {
 	id := ctx.Param("id")
 	teacherID, err := strconv.Atoi(id)
