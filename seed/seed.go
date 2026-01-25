@@ -48,6 +48,9 @@ func main() {
 	teacherService := services.TeacherService{DB: db}
 	teacherHandler := handlers.NewTeacherHandler(&teacherService)
 
+	teamService := services.TeamServices{DB: db}
+	teamHandler := handlers.NewTeamHandler(&teamService)
+
 	r := gin.Default()
 	//configuracion de CORS
 	r.Use(cors.New(cors.Config{
@@ -66,6 +69,7 @@ func main() {
 	routes.RegisterMajorsRoutes(r.Group("/major"), majorHandler)
 	routes.RegisterTourney(r.Group("/tourney"), tourneyHandler)
 	routes.RegisterTeacherRoutes(r.Group("/teachers"), teacherHandler)
+	routes.RegisterTeamRoutes(r.Group("/teams"), teamHandler)
 
 	log.Println(" Server corriendo en http://localhost:8080")
 	r.Run(":8080")

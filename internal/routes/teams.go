@@ -5,12 +5,11 @@ import (
 	"uneg.edu.ve/servicio-sadu-back/internal/handlers"
 )
 
-func RegisterTeamsRoutes(r *gin.Engine) {
-	teams := r.Group("/teams")
-	{
-		teams.GET("/", handlers.GetTeams)
-		teams.POST("/add", handlers.AddTeams)
-	}
+func RegisterTeamRoutes(r *gin.RouterGroup, teamHandler *handlers.TeamHandler) {
+	r.GET("", teamHandler.GetAllTeamHandler)
+	r.GET("/:id", teamHandler.GetTeamByIdHandler)
+	r.POST("/create", teamHandler.CreateTeamHandler)
+	r.PUT("/edit/:id", )
+	r.DELETE("/delete/:id", teamHandler.DeleteTeam)
 }
-
 

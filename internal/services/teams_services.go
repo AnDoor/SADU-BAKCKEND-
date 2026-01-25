@@ -64,6 +64,7 @@ func (s *TeamServices) GetAllTeamByID(ctx *gin.Context) (schema.TeamGetBareDTO, 
 		Athletes: team.Athletes,
 	}, nil
 }
+
 func (s *TeamServices) CreateTeam(t schema.TeamPostDTO) (schema.TeamGetBareDTO, error) {
 	// 1. Validar referencias FK
 	var discipline schema.Discipline
@@ -118,7 +119,7 @@ func (s *TeamServices) CreateTeam(t schema.TeamPostDTO) (schema.TeamGetBareDTO, 
 }
 //func (s *TeamServices) EditTeam(t schema.TeamUpdateDTO, ctx *gin.Context) (schema.TeamGetBareDTO, error)
 
-func (s *TeamServices) Delete(ctx *gin.Context) error {
+func (s *TeamServices) DeleteTeam(ctx *gin.Context) error {
 	id := ctx.Param("id")
 	teamID, err := strconv.Atoi(id)
 	if err != nil {
