@@ -2,7 +2,18 @@ package schema
 
 import "time"
 
+type AthleteDTO struct {
+	ID RegularIDs `json:"id"`
+	GovID string `json:"id_personal"` 
+	FirstNames string  `json:"name"`
+	LastNames string `json:"lastname"`
+	PhoneNum string `json:"phonenumber"`
+	Email string  `json:"email"`
+	Inscripted bool `json:"inscripted"`
+	Regular bool `json:"regular"`
+    
 
+}
 type MajorGetDTO struct {
 	ID   RegularIDs `json:"id"`
 	Name string     `json:"name"`

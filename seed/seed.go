@@ -54,7 +54,7 @@ func main() {
 	r := gin.Default()
 	//configuracion de CORS
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:8080", "https://dominio.uneg.edu.ve"}, // "https://dominio.uneg.edu.ve" es cuando tengamos algun dominio ya puesto
+		AllowOrigins:     []string{"http://localhost:3000", "https://dominio.uneg.edu.ve"}, // "https://dominio.uneg.edu.ve" es cuando tengamos algun dominio ya puesto
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
@@ -71,8 +71,8 @@ func main() {
 	routes.RegisterTeacherRoutes(r.Group("/teachers"), teacherHandler)
 	routes.RegisterTeamRoutes(r.Group("/teams"), teamHandler)
 
-	log.Println(" Server corriendo en http://localhost:8080")
-	r.Run(":8080")
+	log.Println(" Server corriendo en http://localhost:3000")
+	r.Run(":3000")
 }
 
 func seedDatabase(db *gorm.DB) error {

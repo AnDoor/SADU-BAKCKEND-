@@ -19,7 +19,7 @@ func NewTeacherService() *TeacherService {
 	return &TeacherService{DB: config.DB}
 }
 
-func (s *TeacherService) GetTeachers() ([]schema.TeacherGetBareDTO, error) {
+func (s *TeacherService) GetTeachers() ([]schema.TeacherGetDTO, error) {
 	var teachers []schema.Teacher
 
 	if err := s.DB.Preload("Disciplines").Find(&teachers).Error; err != nil {
@@ -27,13 +27,15 @@ func (s *TeacherService) GetTeachers() ([]schema.TeacherGetBareDTO, error) {
 		return nil, err
 	}
 
-	teachersDTO := make([]schema.TeacherGetBareDTO, len(teachers))
+	teachersDTO := make([]schema.TeacherGetDTO, len(teachers))
 
 	for i, teacher := range teachers {
-		teachersDTO[i] = schema.TeacherGetBareDTO{
+		teachersDTO[i] = schema.TeacherGetDTO{
 			ID:          schema.RegularIDs(teacher.ID),
 			FirstNames:  teacher.FirstNames,
 			LastNames:   teacher.LastNames,
+			PhoneNum:    teacher.PhoneNum,
+			Email:       teacher.Email,
 			GovID:       teacher.GovID,
 			Disciplines: helpers.MapDisciplines(teacher.Disciplines),
 		}

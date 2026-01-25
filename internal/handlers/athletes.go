@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -20,7 +21,9 @@ func NewAthleteHandler(service *services.AthleteService) *AthleteHandler {
 func (h *AthleteHandler) GetAthletes(ctx *gin.Context) {
 	athletes, err := h.service.GetAllAthletes()
 	if err != nil {
-		helpers.SendError(ctx, http.StatusInternalServerError, "ERROR IN HANDLER\nError listin athletes")
+		log.Printf("Error getting athletes: %v", err)
+		helpers.SendError(ctx, http.StatusInternalServerError, err.Error())
+		return
 	}
 	helpers.SendSucces(ctx, "listing-athletes", athletes)
 }

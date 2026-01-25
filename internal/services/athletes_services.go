@@ -19,9 +19,28 @@ func NewAthleteService() *AthleteService {
 	return &AthleteService{DB: config.DB}
 }
 //GET  METHOD 
-func (s *AthleteService) GetAllAthletes() ([]schema.Athlete, error) {
+	
+
+func (s *AthleteService) GetAllAthletes() ([]schema.AthleteDTO, error) {
 	var athletes []schema.Athlete
-	return athletes, config.DB.Preload("Teams", nil).Preload("Disciplines").Preload("Events").Find(&athletes).Error
+	if err := s.DB.Omit("Discipline").Find(&athletes).Error; err != nil {
+		return nil,err 
+	}
+	 athleteDTO := make([]schema.AthleteDTO, len(athletes))
+	for i, value := range athletes {
+		athleteDTO[i] = schema.AthleteDTO{
+			ID: schema.RegularIDs(value.ID),
+			GovID: value.GovID,
+			FirstNames: value.FirstNames,
+			LastNames: value.LastNames,
+			PhoneNum: value.PhoneNum,
+			Email: value.Email,
+			Inscripted: value.Inscripted,
+			Regular: value.Regular,
+
+		}
+	}
+	return athleteDTO,nil
 }
 
 //GET BY ID
