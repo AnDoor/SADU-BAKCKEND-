@@ -5,9 +5,10 @@ import (
 	"uneg.edu.ve/servicio-sadu-back/internal/handlers"
 )
 
-func RegisterEventsRoutes(r *gin.Engine) {
-	events := r.Group("/events")
-	{
-		events.GET("/", handlers.GetBareEvents)
-	}
+func RegisterEventsRouters(r *gin.RouterGroup, handler *handlers.EventHandler){
+	r.GET("", handler.GetAllEventsHandler)
+	r.GET("/:id", handler.GetEventByIDHandler)
+	r.POST("/create", handler.CreateEventHandler)
+	r.PUT("/edit/:id", handler.EditEventHandler)
+	r.DELETE("/delete/:id", handler.DeleteEventHandler)
 }

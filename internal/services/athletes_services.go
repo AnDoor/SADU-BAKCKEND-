@@ -21,11 +21,23 @@ func NewAthleteService() *AthleteService {
 //GET  METHOD 
 	
 
-func (s *AthleteService) GetAllAthletes() ([]schema.AthleteDTO, error) {
-	var athletes []schema.Athlete
-	if err := s.DB.Omit("Discipline").Find(&athletes).Error; err != nil {
-		return nil,err 
+func (s *AthleteService) GetAllAthletes(name,lastname,govID string) ([]schema.AthleteDTO, error) {
+	var athletes []schema.Athlete 
+	query:= s.DB.Model(&schema.Athlete{}).Omit("Discipline")
+	
+	if name != ""{
+		query = query.Where("first_names LIKE ?", "%"+name+"%")
 	}
+	if lastname != ""{
+		query = query.Where("last_names LIKE ?", "%"+lastname+"%")
+	}
+	if govID != ""{
+		query = query.Where("gov_id LIKE ?", "%"+govID+"%")
+	}
+	if err := query.Find(&athletes).Error; err != nil {
+        return nil, err
+    }
+
 	 athleteDTO := make([]schema.AthleteDTO, len(athletes))
 	for i, value := range athletes {
 		athleteDTO[i] = schema.AthleteDTO{

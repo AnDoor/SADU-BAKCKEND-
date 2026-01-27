@@ -8,10 +8,14 @@ import (
 
 // Status represents the possible states of an item
 type Gender string
-
+type Status string 
 const (
 	GenderM Gender = "Masculino"
 	GenderF Gender = "Femenino"
+
+	StatusON Status = "Activo"
+	StatusOFF Status = "Finalizado"
+	StatusWait Status = "Pendiente"
 )
 
 // ID uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
@@ -82,6 +86,7 @@ type Teacher struct {
 type Tourney struct {
 	gorm.Model
 	Name   string
+	Status Status `gorm:"index;type:status"`
 	Events []Event `gorm:"foreignKey:TourneyID"`
 }
 

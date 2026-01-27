@@ -20,9 +20,12 @@ func NewUniversityHandler(service *services.UniversityServices) *UniversityHandl
 }
 
 func (h *UniversityHandler) GetAllUniversities(ctx *gin.Context) {
-	universities, err := h.service.GetAllUniversity()
+	name := ctx.Query("name")
+	local := ctx.Query("local")
+	universities, err := h.service.GetAllUniversity(name,local)
 	if err != nil {
 		helpers.SendError(ctx, http.StatusInternalServerError, "ERROR IN HANDLER\n Error listing Universities")
+		return
 	}
 	helpers.SendSucces(ctx, "LISTING-UNIVERSITIES", universities)
 }

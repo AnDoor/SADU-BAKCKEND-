@@ -51,6 +51,9 @@ func main() {
 	teamService := services.TeamServices{DB: db}
 	teamHandler := handlers.NewTeamHandler(&teamService)
 
+	eventService := services.EventService{DB:db}
+	eventHandlers := handlers.NewEventHandler(&eventService)
+
 	r := gin.Default()
 	//configuracion de CORS
 	r.Use(cors.New(cors.Config{
@@ -64,15 +67,15 @@ func main() {
 
 	/*rutas*/
 	routes.RegisterAthletesRoutes(r.Group("/athletes"), athleteHandler)
-	routes.RegisterUniversityRoutes(r.Group("/university"), universityHandler)
-	routes.RegisterDisciplines(r.Group("/discipline"), disciplineHandler)
-	routes.RegisterMajorsRoutes(r.Group("/major"), majorHandler)
-	routes.RegisterTourney(r.Group("/tourney"), tourneyHandler)
+	routes.RegisterUniversityRoutes(r.Group("/universities"), universityHandler)
+	routes.RegisterDisciplines(r.Group("/disciplines"), disciplineHandler)
+	routes.RegisterMajorsRoutes(r.Group("/majors"), majorHandler)
+	routes.RegisterTourney(r.Group("/tourneys"), tourneyHandler)
 	routes.RegisterTeacherRoutes(r.Group("/teachers"), teacherHandler)
 	routes.RegisterTeamRoutes(r.Group("/teams"), teamHandler)
-
-	log.Println(" Server corriendo en http://localhost:3000")
-	r.Run(":3000")
+	routes.RegisterEventsRouters(r.Group("/events"),eventHandlers)
+	log.Println(" Server corriendo en http://localhost:8080")
+	r.Run(":8080")
 }
 
 func seedDatabase(db *gorm.DB) error {
@@ -197,11 +200,11 @@ func seedDatabase(db *gorm.DB) error {
 
 	// Seed Tourneys
 	torneos := []Tourney{
-		{Name: "Juegos Interuniversitarios Nacional"},
-		{Name: "Copa Universitaria Regional"},
-		{Name: "Torneo de Verano"},
-		{Name: "Campeonato Nacional Universitario"},
-		{Name: "Liga Universitaria"},
+		{Name: "Juegos Interuniversitarios Nacional", Status: StatusOFF},
+		{Name: "Copa Universitaria Regional",Status: StatusON},
+		{Name: "Torneo de Verano",Status: StatusWait},
+		{Name: "Campeonato Nacional Universitario",Status: StatusOFF},
+		{Name: "Liga Universitaria",Status: StatusON},
 	}
 	if err := db.Create(&torneos).Error; err != nil {
 		return err

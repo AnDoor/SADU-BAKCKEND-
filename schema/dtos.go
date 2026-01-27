@@ -3,16 +3,14 @@ package schema
 import "time"
 
 type AthleteDTO struct {
-	ID RegularIDs `json:"id"`
-	GovID string `json:"id_personal"` 
-	FirstNames string  `json:"name"`
-	LastNames string `json:"lastname"`
-	PhoneNum string `json:"phonenumber"`
-	Email string  `json:"email"`
-	Inscripted bool `json:"inscripted"`
-	Regular bool `json:"regular"`
-    
-
+	ID         RegularIDs `json:"id"`
+	GovID      string     `json:"id_personal"`
+	FirstNames string     `json:"name"`
+	LastNames  string     `json:"lastname"`
+	PhoneNum   string     `json:"phonenumber"`
+	Email      string     `json:"email"`
+	Inscripted bool       `json:"inscripted"`
+	Regular    bool       `json:"regular"`
 }
 type MajorGetDTO struct {
 	ID   RegularIDs `json:"id"`
@@ -85,22 +83,24 @@ type TeacherGetDTO struct {
 	// Events      []Event      `json:"events"`
 }
 type TeacherCreateDTO struct {
-    FirstNames string        `json:"first_names" binding:"required,min=2"`
-    LastNames  string        `json:"last_names" binding:"required,min=2"`
-    PhoneNum   string        `json:"phone_num"`
-    Email      string        `json:"email" binding:"omitempty,email"`
-    GovID      string        `json:"gov_id" binding:"required,len=8"`
-    DisciplineIDs []RegularIDs `json:"discipline_ids"`
+	FirstNames    string       `json:"first_names" binding:"required,min=2"`
+	LastNames     string       `json:"last_names" binding:"required,min=2"`
+	PhoneNum      string       `json:"phone_num"`
+	Email         string       `json:"email" binding:"omitempty,email"`
+	GovID         string       `json:"gov_id" binding:"required,len=8"`
+	DisciplineIDs []RegularIDs `json:"discipline_ids"`
 }
 
 type TourneyGetBareDTO struct {
-	ID   RegularIDs `json:"id"`
-	Name string     `json:"name"`
+	ID     RegularIDs `json:"id"`
+	Name   string     `json:"name"`
+	Status Status     `json:"status"`
 }
 
 type TourneyGetFullDTO struct {
 	ID     RegularIDs        `json:"id"`
 	Name   string            `json:"name"`
+	Status Status            `json:"status"`
 	Events []EventGetBareDTO `json:"events"`
 }
 

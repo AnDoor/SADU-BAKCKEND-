@@ -18,9 +18,15 @@ func NewDisciplineServices() *DisciplineServices {
 	return &DisciplineServices{DB: config.DB}
 }
 
-func (d *DisciplineServices) GetAllDisciplines() ([]schema.DisciplineGetBareDTO, error) {
+func (d *DisciplineServices) GetAllDisciplines(name string) ([]schema.DisciplineGetBareDTO, error) {
 	var disciplines []schema.Discipline
-	if err := d.DB.Preload("Teams", nil).Find(&disciplines).Error; err != nil {
+	query:= d.DB.Order("name").Preload("Teams", nil)
+
+	if name != "" {
+		query = query.Where("name LIKE ?", "%"+name+"%")
+	}
+	
+	if err := query.Find(&disciplines).Error; err != nil {
 		return nil, err
 	}
 	var disciplinesDTO []schema.DisciplineGetBareDTO

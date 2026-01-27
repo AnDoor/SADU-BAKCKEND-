@@ -18,9 +18,18 @@ func NewUniversityService() *UniversityServices {
 	return &UniversityServices{DB: config.DB}
 }
 
-func (s *UniversityServices) GetAllUniversity() ([]schema.UniversityGetBareDTO, error) {
+func (s *UniversityServices) GetAllUniversity(name string,local string) ([]schema.UniversityGetBareDTO, error) {
 	var universities []schema.University
-	if err := s.DB.Preload("Teams", nil).Find(&universities).Error; err != nil {
+	query:= s.DB.Model(&schema.University{}).Preload("Teams", nil)
+
+	if name != "" {
+		query= query.Where("name LIKE ?","%"+name+"%")
+	}
+		if local == "true" || local == "false" {
+			isLocal := local == "true"
+		query= query.Where("local = ?",isLocal)
+	}
+	if err := query.Find(&universities).Error; err != nil {
 		return nil, err
 	}
 
@@ -31,8 +40,6 @@ func (s *UniversityServices) GetAllUniversity() ([]schema.UniversityGetBareDTO, 
 			Name: university.Name,
 		})
 	}
-
-	//helpers.SendSucces(ctx, "listing-events", eventsDTO)
 
 	return universitiesBareDTO, nil
 }

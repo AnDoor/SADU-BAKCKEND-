@@ -18,7 +18,8 @@ func NewMajorHandler(service *services.MajorServices) *MajorHandler {
 }
 
 func (h *MajorHandler) GetAllMajorHandler(ctx *gin.Context) {
-	majors, err := h.service.GetAllMajor()
+	name:=ctx.Query("name")
+	majors, err := h.service.GetAllMajor(name)
 	if err != nil {
 		helpers.SendError(ctx, http.StatusInternalServerError, "ERROR IN HANDLER\nError listin majors")
 		return

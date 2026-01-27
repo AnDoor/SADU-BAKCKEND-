@@ -19,12 +19,17 @@ func NewTourneyHandler(service *services.TourneyServices) *TourneyHandler {
 	return &TourneyHandler{service: service}
 }
 
-func (h *TourneyHandler) GetAllTourneyHandler(ctx *gin.Context) {
-	tourneys, err := h.service.GetAllTourney()
+func (h *TourneyHandler) GetAllTourneyHandler(c *gin.Context) {
+		name := c.Query("name")
+		status := c.Query("status")
+
+	dtos, err := h.service.GetAllTourney(name,status)
 	if err != nil {
-		helpers.SendError(ctx, http.StatusInternalServerError, "ERROR IN HANDLER\n Error listing TOURNIES")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al obtener torneos"})
+		return
 	}
-	helpers.SendSucces(ctx, "LISTING-TOURNIES", tourneys)
+
+	c.JSON(http.StatusOK, dtos)
 }
 
 func (h *TourneyHandler) GetTourneyByIdHandler(ctx *gin.Context) {

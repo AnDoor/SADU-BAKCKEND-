@@ -20,7 +20,8 @@ func NewDisciplineHandler(service *services.DisciplineServices) *DisciplineHandl
 }
 
 func (h *DisciplineHandler) GetAllDisciplineHandler(ctx *gin.Context) {
-	discipline, err := h.service.GetAllDisciplines()
+	name := ctx.Query("name")
+	discipline, err := h.service.GetAllDisciplines(name)
 	if err != nil {
 		helpers.SendError(ctx, http.StatusInternalServerError, "ERROR IN HANDLER\n Error listing Disciplines")
 		return

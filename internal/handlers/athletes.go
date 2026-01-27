@@ -19,7 +19,11 @@ func NewAthleteHandler(service *services.AthleteService) *AthleteHandler {
 }
 
 func (h *AthleteHandler) GetAthletes(ctx *gin.Context) {
-	athletes, err := h.service.GetAllAthletes()
+	name := ctx.Query("name")
+    lastName := ctx.Query("lastName")
+    govID := ctx.Query("govID")
+
+	athletes, err := h.service.GetAllAthletes(name,lastName,govID)
 	if err != nil {
 		log.Printf("Error getting athletes: %v", err)
 		helpers.SendError(ctx, http.StatusInternalServerError, err.Error())

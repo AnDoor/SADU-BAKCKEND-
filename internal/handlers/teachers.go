@@ -19,13 +19,18 @@ type TeacherHandler struct {
 func NewTeacherHandler(service *services.TeacherService) *TeacherHandler {
 	return &TeacherHandler{service: service}
 }
-func (h *TeacherHandler) GetAllTeachersHandler(c *gin.Context) {
-	teachersDTO, err := h.service.GetTeachers()
+func (h *TeacherHandler) GetAllTeachersHandler(ctx *gin.Context) {
+	name := ctx.Query("name")
+	lastName := ctx.Query("lastName")
+	govID := ctx.Query("govID")
+
+	teachersDTO, err := h.service.GetTeachers(name,lastName,govID)
+	
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error listando profesores: " + err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Error listando profesores: " + err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": teachersDTO, "message": "Profesores listados exitosamente"})
+	ctx.JSON(http.StatusOK, gin.H{"data": teachersDTO, "message": "Profesores listados exitosamente"})
 }
 
 func (h *TeacherHandler) GetTeacherByIdHandler(c *gin.Context) {

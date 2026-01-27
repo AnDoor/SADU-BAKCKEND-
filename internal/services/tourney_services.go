@@ -19,17 +19,27 @@ func NewTourneyServices() *TourneyServices {
 	return &TourneyServices{DB: config.DB}
 }
 
-func (s *TourneyServices) GetAllTourney() ([]schema.TourneyGetBareDTO, error) {
+func (s *TourneyServices) GetAllTourney(name, status string) ([]schema.TourneyGetBareDTO, error) {
 	var tourneys []schema.Tourney
-	if err := s.DB.Preload("Events", nil).Find(&tourneys).Error; err != nil {
-		return nil, err
-	}
+	query := s.DB.Preload("Events")
+   
+    if name != "" {
+        query = query.Where("name LIKE ?", "%"+name+"%")
+    } 
+	if status != "" {
+        query = query.Where("status LIKE ?", "%"+status+"%")
+    } 
+
+    if err := query.Find(&tourneys).Error; err != nil {
+        return nil, err
+    }
 	var dtos []schema.TourneyGetBareDTO
 
 	for _, t := range tourneys {
 		dto := schema.TourneyGetBareDTO{
 			ID:   schema.RegularIDs(t.ID),
 			Name: t.Name,
+			Status: t.Status,
 		}
 		dtos = append(dtos, dto)
 	}
@@ -51,6 +61,7 @@ func (s *TourneyServices) GetTourneyByID(c *gin.Context) (schema.TourneyGetFullD
 	return schema.TourneyGetFullDTO{
 		ID:     schema.RegularIDs(tourneyID),
 		Name:   tourney.Name,
+		Status: tourney.Status,
 		Events: helpers.MapEventsBare(tourney.Events),
 	}, nil
 }
