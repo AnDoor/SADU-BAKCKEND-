@@ -45,6 +45,7 @@ func (s *TourneyServices) GetAllTourney(name, status string) ([]schema.TourneyGe
 	}
 	return dtos, nil
 }
+
 func (s *TourneyServices) GetTourneyByID(c *gin.Context) (schema.TourneyGetFullDTO, error) {
 	var id = c.Param("id")
 	var tourney schema.Tourney
@@ -53,7 +54,12 @@ func (s *TourneyServices) GetTourneyByID(c *gin.Context) (schema.TourneyGetFullD
 		return schema.TourneyGetFullDTO{}, fmt.Errorf("ID INVALID:%w", err)
 
 	}
-	result := s.DB.Preload("Events").First(&tourney, tourneyID).Error
+	result := s.DB.Preload("Events").Preload("Events.HomeTeam.University").
+    Preload("Events.HomeTeam.Athletes").          
+    Preload("Events.OppositeTeam.University").
+    Preload("Events.OppositeTeam.Athletes").      
+    Preload("Events.ResponsableTeacher.Disciplines"). 
+    Preload("Events.Discipline").First(&tourney, tourneyID).Error
 	if result != nil {
 		return schema.TourneyGetFullDTO{}, result
 	}
@@ -65,6 +71,7 @@ func (s *TourneyServices) GetTourneyByID(c *gin.Context) (schema.TourneyGetFullD
 		Events: helpers.MapEventsBare(tourney.Events),
 	}, nil
 }
+
 func (s *TourneyServices) CreateTourney(t schema.Tourney) (schema.TourneyGetFullDTO, error) {
 
 	result := s.DB.Create(&t)

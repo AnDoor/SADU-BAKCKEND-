@@ -15,7 +15,9 @@ type AthleteHandler struct {
 }
 
 func NewAthleteHandler(service *services.AthleteService) *AthleteHandler {
-	return &AthleteHandler{service: service}
+	return &AthleteHandler{
+		service: service,
+	}
 }
 
 func (h *AthleteHandler) GetAthletes(ctx *gin.Context) {

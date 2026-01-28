@@ -34,7 +34,7 @@ type TeamGetBareDTO struct {
 	Regular    bool                 `json:"regular" binding:"required"`
 	Category   string               `json:"category"`
 	University UniversityGetBareDTO `json:"university"`
-	Athletes   []Athlete            `json:"athletes" binding:"required"`
+	Athletes   []AthleteDTO            `json:"athletes" binding:"required"`
 }
 
 type TeamGetDTO struct {

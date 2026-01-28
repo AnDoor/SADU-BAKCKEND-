@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"uneg.edu.ve/servicio-sadu-back/config"
+	"uneg.edu.ve/servicio-sadu-back/helpers"
 	"uneg.edu.ve/servicio-sadu-back/schema"
 )
 
@@ -60,8 +61,9 @@ func (s *TeamServices) GetAllTeamByID(ctx *gin.Context) (schema.TeamGetBareDTO, 
 		University: schema.UniversityGetBareDTO{
 			ID:   schema.RegularIDs(team.University.ID),
 			Name: team.University.Name,
+			Local: team.University.Local,
 		},
-		Athletes: team.Athletes,
+		Athletes: helpers.MapAthletes(team.Athletes),
 	}, nil
 }
 
@@ -112,7 +114,7 @@ func (s *TeamServices) CreateTeam(t schema.TeamPostDTO) (schema.TeamGetBareDTO, 
 			ID:   schema.RegularIDs(fullTeam.University.ID),
 			Name: fullTeam.University.Name,
 		},
-		Athletes: fullTeam.Athletes,
+		Athletes: helpers.MapAthletes(fullTeam.Athletes),
 	}
 
 	return dto, nil

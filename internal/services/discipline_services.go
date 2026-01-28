@@ -47,7 +47,7 @@ func (d *DisciplineServices) GetAllDisciplinesByID(c *gin.Context) (schema.Disci
 		return schema.Discipline{}, fmt.Errorf("ID invalido | %v", err)
 	}
 	var discipline schema.Discipline
-	if result := d.DB.Preload("Teams").Preload("Events").Preload("Athletes").Preload("Teachers").First(&discipline, disciplineID).Error; result != nil {
+	if result := d.DB.Preload("Teams.University").Preload("Teams").Preload("Events").Preload("Athletes").Preload("Teachers").First(&discipline, disciplineID).Error; result != nil {
 		return schema.Discipline{}, fmt.Errorf("Discipline not found | %w", result)
 	}
 
