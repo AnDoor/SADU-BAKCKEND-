@@ -134,7 +134,7 @@ func MapAthletes(athletes []schema.Athlete) []schema.AthleteDTO {
 			GovID:      disc.GovID,
 			PhoneNum:   disc.PhoneNum,
 			Email:      disc.Email,
-			Inscripted: disc.Inscripted,
+			Enrolled: disc.Enrolled,
 			Regular:    disc.Regular,
 		}
 	}

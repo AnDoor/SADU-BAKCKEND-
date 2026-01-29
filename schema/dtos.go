@@ -10,7 +10,7 @@ type AthleteDTO struct {
 	PhoneNum   string     `json:"PhoneNumber"`
 	Email      string     `json:"Email"`
 	Gender     Gender     `json:"Gender"`
-	Inscripted bool       `json:"inscripted"`
+	Enrolled bool       `json:"Enrolled"`
 	Regular    bool       `json:"Regular"`
 }
 

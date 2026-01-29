@@ -51,7 +51,7 @@ type Athlete struct {
 	LastNames       string
 	PhoneNum        string
 	Email           string
-	Inscripted 		bool 
+	Enrolled 		bool 
 	Gender          Gender    `gorm:"index;type:gender"`
 	InscriptionDate time.Time // Fecha de inscripcion
 	Regular         bool      // Titular

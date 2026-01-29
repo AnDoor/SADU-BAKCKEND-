@@ -48,7 +48,7 @@ func (s *AthleteService) GetAllAthletes(name,lastname,govID string) ([]schema.At
 			PhoneNum: value.PhoneNum,
 			Gender: value.Gender,
 			Email: value.Email,
-			Inscripted: value.Inscripted,
+			Enrolled: value.Enrolled,
 			Regular: value.Regular,
 
 		}

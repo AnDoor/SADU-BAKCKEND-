@@ -166,7 +166,7 @@ func seedDatabase(db *gorm.DB) error {
 			FirstNames:      faker.FirstName(),
 			LastNames:       faker.LastName() + " " + faker.LastName(),
 			PhoneNum:        faker.Phone(),
-			Inscripted:      faker.Bool(),
+			Enrolled:      faker.Bool(),
 			Email:           faker.Email(),
 			Gender:          gender,
 			InscriptionDate: faker.DateRange(time.Now().AddDate(-2, 0, 0), time.Now()),
