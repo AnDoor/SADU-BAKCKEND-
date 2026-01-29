@@ -8,13 +8,14 @@ import (
 
 // Status represents the possible states of an item
 type Gender string
-type Status string 
+type Status string
+
 const (
 	GenderM Gender = "Masculino"
 	GenderF Gender = "Femenino"
 
-	StatusON Status = "Activo"
-	StatusOFF Status = "Finalizado"
+	StatusON   Status = "Activo"
+	StatusOFF  Status = "Finalizado"
 	StatusWait Status = "Pendiente"
 )
 
@@ -47,22 +48,22 @@ type Team struct {
 
 type Athlete struct {
 	gorm.Model
-	FirstNames      string 
+	FirstNames      string
 	LastNames       string
-	PhoneNum        string
+	PhoneNumber     string
 	Email           string
-	Enrolled 		bool 
+	Enrolled        bool
 	Gender          Gender    `gorm:"index;type:gender"`
 	InscriptionDate time.Time // Fecha de inscripcion
 	Regular         bool      // Titular
-	GovID           string    `gorm:"unique;not null"`// Cedula
+	GovID           string    `gorm:"unique;not null"` // Cedula
 	MajorID         RegularIDs
 	Teams           []Team       `gorm:"many2many:athlete_teams;"`
 	Events          []Event      `gorm:"many2many:athlete_events;"` // foreignKey:AthleteID
 	Disciplines     []Discipline `gorm:"many2many:athlete_disciplines;"`
 }
 
-//disciplina deportiva 
+// disciplina deportiva
 type Discipline struct {
 	gorm.Model
 	Name     string
@@ -76,9 +77,9 @@ type Teacher struct {
 	gorm.Model
 	FirstNames  string
 	LastNames   string
-	PhoneNum    string
+	PhoneNumber string
 	Email       string
-	GovID       string	 	 `gorm:"unique;not null"`// Cedula
+	GovID       string       `gorm:"unique;not null"` // Cedula
 	Events      []Event      `gorm:"foreignKey:ResponsableTeacherID"`
 	Disciplines []Discipline `gorm:"many2many:teacher_disciplines;"`
 }
@@ -86,7 +87,7 @@ type Teacher struct {
 type Tourney struct {
 	gorm.Model
 	Name   string
-	Status Status `gorm:"index;type:status"`
+	Status Status  `gorm:"index;type:status"`
 	Events []Event `gorm:"foreignKey:TourneyID"`
 }
 

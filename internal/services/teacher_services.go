@@ -43,7 +43,7 @@ func (s *TeacherService) GetTeachers(name, lastname, govID string) ([]schema.Tea
 			ID:          schema.RegularIDs(teacher.ID),
 			FirstNames:  teacher.FirstNames,
 			LastNames:   teacher.LastNames,
-			PhoneNum:    teacher.PhoneNum,
+			PhoneNumber: teacher.PhoneNumber,
 			Email:       teacher.Email,
 			GovID:       teacher.GovID,
 			Disciplines: helpers.MapDisciplines(teacher.Disciplines),
@@ -68,7 +68,7 @@ func (s *TeacherService) GetTeacherById(ctx *gin.Context) (schema.TeacherGetDTO,
 		ID:          schema.RegularIDs(teacherId),
 		FirstNames:  teacher.FirstNames,
 		LastNames:   teacher.LastNames,
-		PhoneNum:    teacher.PhoneNum,
+		PhoneNumber: teacher.PhoneNumber,
 		Email:       teacher.Email,
 		GovID:       teacher.GovID,
 		Disciplines: helpers.MapDisciplines(teacher.Disciplines),
@@ -85,11 +85,11 @@ func (s *TeacherService) CreateTeacher(t schema.TeacherCreateDTO) (schema.Teache
 
 	//  Crear modelo desde DTO
 	teacher := schema.Teacher{
-		FirstNames: t.FirstNames,
-		LastNames:  t.LastNames,
-		PhoneNum:   t.PhoneNum,
-		Email:      t.Email,
-		GovID:      t.GovID,
+		FirstNames:  t.FirstNames,
+		LastNames:   t.LastNames,
+		PhoneNumber: t.PhoneNumber,
+		Email:       t.Email,
+		GovID:       t.GovID,
 	}
 
 	if err := s.DB.Create(&teacher).Error; err != nil {
@@ -116,7 +116,7 @@ func (s *TeacherService) CreateTeacher(t schema.TeacherCreateDTO) (schema.Teache
 		ID:          schema.RegularIDs(teacher.ID),
 		FirstNames:  teacher.FirstNames,
 		LastNames:   teacher.LastNames,
-		PhoneNum:    teacher.PhoneNum,
+		PhoneNumber: teacher.PhoneNumber,
 		Email:       teacher.Email,
 		GovID:       teacher.GovID,
 		Disciplines: helpers.MapDisciplines(teacher.Disciplines),
@@ -146,7 +146,7 @@ func (s *TeacherService) EditTeacher(ctx *gin.Context, t schema.Teacher) (schema
 
 	teacher.FirstNames = t.FirstNames
 	teacher.LastNames = t.LastNames
-	teacher.PhoneNum = t.PhoneNum
+	teacher.PhoneNumber = t.PhoneNumber
 	teacher.Email = t.Email
 	teacher.GovID = t.GovID
 

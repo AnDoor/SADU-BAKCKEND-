@@ -165,7 +165,7 @@ func seedDatabase(db *gorm.DB) error {
 		atletas = append(atletas, Athlete{
 			FirstNames:      faker.FirstName(),
 			LastNames:       faker.LastName() + " " + faker.LastName(),
-			PhoneNum:        faker.Phone(),
+			PhoneNumber:        faker.Phone(),
 			Enrolled:      faker.Bool(),
 			Email:           faker.Email(),
 			Gender:          gender,
@@ -188,7 +188,7 @@ func seedDatabase(db *gorm.DB) error {
 		profesores = append(profesores, Teacher{
 			FirstNames: faker.FirstName(),
 			LastNames:  faker.LastName() + " " + faker.LastName(),
-			PhoneNum:   faker.Phone(),
+			PhoneNumber:   faker.Phone(),
 			Email:      faker.Email(),
 			GovID:      GovId,
 		})

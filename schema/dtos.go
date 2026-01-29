@@ -3,15 +3,15 @@ package schema
 import "time"
 
 type AthleteDTO struct {
-	ID         RegularIDs `json:"ID"`
-	GovID      string     `json:"GovID"`
-	FirstNames string     `json:"FirstNames"`
-	LastNames  string     `json:"LastNames"`
-	PhoneNum   string     `json:"PhoneNumber"`
-	Email      string     `json:"Email"`
-	Gender     Gender     `json:"Gender"`
-	Enrolled bool       `json:"Enrolled"`
-	Regular    bool       `json:"Regular"`
+	ID          RegularIDs `json:"ID"`
+	GovID       string     `json:"GovID"`
+	FirstNames  string     `json:"FirstNames"`
+	LastNames   string     `json:"LastNames"`
+	PhoneNumber string     `json:"PhoneNumber"`
+	Email       string     `json:"Email"`
+	Gender      Gender     `json:"Gender"`
+	Enrolled    bool       `json:"Enrolled"`
+	Regular     bool       `json:"Regular"`
 }
 
 type MajorGetDTO struct {
@@ -78,7 +78,7 @@ type TeacherGetDTO struct {
 	ID          RegularIDs             `json:"ID"`
 	FirstNames  string                 `json:"FirstNames"`
 	LastNames   string                 `json:"LastNames"`
-	PhoneNum    string                 `json:"PhoneNumber"`
+	PhoneNumber string                 `json:"PhoneNumber"`
 	Email       string                 `json:"Email"`
 	GovID       string                 `json:"GovID"`
 	Disciplines []DisciplineGetBareDTO `json:"Disciplines"`
@@ -87,7 +87,7 @@ type TeacherGetDTO struct {
 type TeacherCreateDTO struct {
 	FirstNames    string       `json:"FirstNames" binding:"required,min=2"`
 	LastNames     string       `json:"LastNames" binding:"required,min=2"`
-	PhoneNum      string       `json:"PhoneNumber"`
+	PhoneNumber   string       `json:"PhoneNumber"`
 	Email         string       `json:"Email" binding:"omitempty,email"`
 	GovID         string       `json:"GovID" binding:"required,len=8"`
 	DisciplineIDs []RegularIDs `json:"DisciplineIDs"`
