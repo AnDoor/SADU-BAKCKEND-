@@ -46,6 +46,7 @@ func (s *AthleteService) GetAllAthletes(name,lastname,govID string) ([]schema.At
 			FirstNames: value.FirstNames,
 			LastNames: value.LastNames,
 			PhoneNum: value.PhoneNum,
+			Gender: value.Gender,
 			Email: value.Email,
 			Inscripted: value.Inscripted,
 			Regular: value.Regular,
@@ -59,12 +60,14 @@ func (s *AthleteService) GetAllAthletes(name,lastname,govID string) ([]schema.At
 func (s *AthleteService) GetAthletesByID(c *gin.Context) (schema.Athlete, error) {
 	var id = c.Param("id")
 	athleteID, err := strconv.Atoi(id)
+	query:= s.DB.Preload("Teams.University", nil).Preload("Teams.Discipline", nil).Preload("Teams", nil).Preload("Disciplines").Preload("Events")
+	
 	if err != nil {
 		return schema.Athlete{}, fmt.Errorf("ID invalido: %v", err)
 	}
 	var athlete schema.Athlete
 
-	result := s.DB.Preload("Teams", nil).Preload("Disciplines").Preload("Events").First(&athlete, athleteID)
+	result := query.First(&athlete, athleteID)
 	if result.Error != nil {
 		return schema.Athlete{}, result.Error
 	}

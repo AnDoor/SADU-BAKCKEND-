@@ -47,7 +47,7 @@ type Team struct {
 
 type Athlete struct {
 	gorm.Model
-	FirstNames      string
+	FirstNames      string 
 	LastNames       string
 	PhoneNum        string
 	Email           string
@@ -55,7 +55,7 @@ type Athlete struct {
 	Gender          Gender    `gorm:"index;type:gender"`
 	InscriptionDate time.Time // Fecha de inscripcion
 	Regular         bool      // Titular
-	GovID           string    // Cedula
+	GovID           string    `gorm:"unique;not null"`// Cedula
 	MajorID         RegularIDs
 	Teams           []Team       `gorm:"many2many:athlete_teams;"`
 	Events          []Event      `gorm:"many2many:athlete_events;"` // foreignKey:AthleteID
@@ -78,7 +78,7 @@ type Teacher struct {
 	LastNames   string
 	PhoneNum    string
 	Email       string
-	GovID       string
+	GovID       string	 	 `gorm:"unique;not null"`// Cedula
 	Events      []Event      `gorm:"foreignKey:ResponsableTeacherID"`
 	Disciplines []Discipline `gorm:"many2many:teacher_disciplines;"`
 }

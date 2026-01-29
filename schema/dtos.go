@@ -3,132 +3,134 @@ package schema
 import "time"
 
 type AthleteDTO struct {
-	ID         RegularIDs `json:"id"`
-	GovID      string     `json:"id_personal"`
-	FirstNames string     `json:"name"`
-	LastNames  string     `json:"lastname"`
-	PhoneNum   string     `json:"phonenumber"`
-	Email      string     `json:"email"`
+	ID         RegularIDs `json:"ID"`
+	GovID      string     `json:"GovID"`
+	FirstNames string     `json:"FirstNames"`
+	LastNames  string     `json:"LastNames"`
+	PhoneNum   string     `json:"PhoneNumber"`
+	Email      string     `json:"Email"`
+	Gender     Gender     `json:"Gender"`
 	Inscripted bool       `json:"inscripted"`
-	Regular    bool       `json:"regular"`
+	Regular    bool       `json:"Regular"`
 }
+
 type MajorGetDTO struct {
-	ID   RegularIDs `json:"id"`
-	Name string     `json:"name"`
+	ID   RegularIDs `json:"ID"`
+	Name string     `json:"Name"`
 }
 
 type DisciplineGetBareDTO struct {
-	ID   RegularIDs `json:"id"`
-	Name string     `json:"name"`
+	ID   RegularIDs `json:"ID"`
+	Name string     `json:"Name"`
 }
 
 type UniversityGetBareDTO struct {
-	ID    RegularIDs `json:"id"`
-	Name  string     `json:"name"`
-	Local bool       `json:"local"`
+	ID    RegularIDs `json:"ID"`
+	Name  string     `json:"Name"`
+	Local bool       `json:"Local"`
 }
 
 type TeamGetBareDTO struct {
-	ID         RegularIDs           `json:"id"`
-	Name       string               `json:"name" binding:"required"`
-	Regular    bool                 `json:"regular" binding:"required"`
-	Category   string               `json:"category"`
-	University UniversityGetBareDTO `json:"university"`
-	Athletes   []AthleteDTO            `json:"athletes" binding:"required"`
+	ID         RegularIDs           `json:"ID"`
+	Name       string               `json:"Name" binding:"required"`
+	Regular    bool                 `json:"Regular" binding:"required"`
+	Category   string               `json:"Category"`
+	University UniversityGetBareDTO `json:"University"`
+	Athletes   []AthleteDTO         `json:"Athletes" binding:"required"`
 }
 
 type TeamGetDTO struct {
-	ID           RegularIDs `json:"id"`
-	Name         string     `json:"name" binding:"required"`
-	Regular      bool       `json:"regular" binding:"required"`
-	Category     string     `json:"category"`
-	DisciplineID RegularIDs `json:"discipline_id"`
-	UniversityID RegularIDs `json:"university_id"`
-	Athletes     []Athlete  `json:"athletes" binding:"required"`
+	ID           RegularIDs `json:"ID"`
+	Name         string     `json:"Name" binding:"required"`
+	Regular      bool       `json:"Regular" binding:"required"`
+	Category     string     `json:"Category"`
+	DisciplineID RegularIDs `json:"DisciplineID"`
+	UniversityID RegularIDs `json:"UniversityID"`
+	Athletes     []Athlete  `json:"Athletes" binding:"required"`
 }
 
 type TeamUpdateDTO struct {
-	Name       *string   `json:"name" binding:"omitempty,min=3"`
-	Regular    *bool     `json:"regular"`
-	Category   *string   `json:"category"`
-	AthleteIDs []Athlete `json:"athlete_ids"`
+	Name       *string   `json:"Name" binding:"omitempty,min=3"`
+	Regular    *bool     `json:"Regular"`
+	Category   *string   `json:"Category"`
+	AthleteIDs []Athlete `json:"AthleteIDs"`
 }
 
 type TeamPostDTO struct {
-	ID           RegularIDs   `json:"id"`
-	Name         string       `json:"name" binding:"required"`
-	Regular      bool         `json:"regular" binding:"required"`
-	Category     string       `json:"category"`
-	DisciplineID RegularIDs   `json:"discipline_id"`
-	UniversityID RegularIDs   `json:"university_id"`
-	AthleteIDs   []RegularIDs `json:"athlete_ids" binding:"required"`
+	ID           RegularIDs   `json:"ID"`
+	Name         string       `json:"Name" binding:"required"`
+	Regular      bool         `json:"Regular" binding:"required"`
+	Category     string       `json:"Category"`
+	DisciplineID RegularIDs   `json:"DisciplineID"`
+	UniversityID RegularIDs   `json:"UniversityID"`
+	AthleteIDs   []RegularIDs `json:"AthleteIDs" binding:"required"`
 }
 
 type TeacherGetBareDTO struct {
-	ID          RegularIDs             `json:"id"`
-	FirstNames  string                 `json:"first_names"`
-	LastNames   string                 `json:"last_names"`
-	GovID       string                 `json:"gov_id"`
-	Disciplines []DisciplineGetBareDTO `json:"disciplines"`
+	ID          RegularIDs             `json:"ID"`
+	FirstNames  string                 `json:"FirstNames"`
+	LastNames   string                 `json:"LastNames"`
+	GovID       string                 `json:"GovID"`
+	Disciplines []DisciplineGetBareDTO `json:"Disciplines"`
 }
 
 type TeacherGetDTO struct {
-	ID          RegularIDs             `json:"id"`
-	FirstNames  string                 `json:"first_names"`
-	LastNames   string                 `json:"last_names"`
-	PhoneNum    string                 `json:"phone_num"`
-	Email       string                 `json:"email"`
-	GovID       string                 `json:"gov_id"`
-	Disciplines []DisciplineGetBareDTO `json:"disciplines"`
+	ID          RegularIDs             `json:"ID"`
+	FirstNames  string                 `json:"FirstNames"`
+	LastNames   string                 `json:"LastNames"`
+	PhoneNum    string                 `json:"PhoneNumber"`
+	Email       string                 `json:"Email"`
+	GovID       string                 `json:"GovID"`
+	Disciplines []DisciplineGetBareDTO `json:"Disciplines"`
 	// Events      []Event      `json:"events"`
 }
 type TeacherCreateDTO struct {
-	FirstNames    string       `json:"first_names" binding:"required,min=2"`
-	LastNames     string       `json:"last_names" binding:"required,min=2"`
-	PhoneNum      string       `json:"phone_num"`
-	Email         string       `json:"email" binding:"omitempty,email"`
-	GovID         string       `json:"gov_id" binding:"required,len=8"`
-	DisciplineIDs []RegularIDs `json:"discipline_ids"`
+	FirstNames    string       `json:"FirstNames" binding:"required,min=2"`
+	LastNames     string       `json:"LastNames" binding:"required,min=2"`
+	PhoneNum      string       `json:"PhoneNumber"`
+	Email         string       `json:"Email" binding:"omitempty,email"`
+	GovID         string       `json:"GovID" binding:"required,len=8"`
+	DisciplineIDs []RegularIDs `json:"DisciplineIDs"`
 }
 
 type TourneyGetBareDTO struct {
-	ID     RegularIDs `json:"id"`
-	Name   string     `json:"name"`
-	Status Status     `json:"status"`
+	ID     RegularIDs `json:"ID"`
+	Name   string     `json:"Name"`
+	Status Status     `json:"Status"`
 }
 
 type TourneyGetFullDTO struct {
-	ID     RegularIDs        `json:"id"`
-	Name   string            `json:"name"`
-	Status Status            `json:"status"`
-	Events []EventGetBareDTO `json:"events"`
+	ID     RegularIDs        `json:"ID"`
+	Name   string            `json:"Name"`
+	Status Status            `json:"Status"`
+	Events []EventGetBareDTO `json:"Events"`
 }
 
 type EventGetBareDTO struct {
-	ID                 RegularIDs           `json:"id"`
-	Name               string               `json:"name"`
-	Date               time.Time            `json:"date"`
-	Status             string               `json:"status"`
-	HomePoints         uint8                `json:"home_points"`
-	OppositePoints     uint8                `json:"opposite_points"`
-	HomeTeam           TeamGetBareDTO       `json:"home_team"`
-	OppositeTeam       TeamGetBareDTO       `json:"opposite_team"`
-	ResponsableTeacher TeacherGetBareDTO    `json:"responsable_teacher"`
-	Discipline         DisciplineGetBareDTO `json:"discipline"`
+	ID                 RegularIDs           `json:"ID"`
+	Name               string               `json:"Name"`
+	Date               time.Time            `json:"Date"`
+	Status             string               `json:"Status"`
+	HomePoints         uint8                `json:"HomePoints"`
+	OppositePoints     uint8                `json:"OppositePoints"`
+	HomeTeam           TeamGetBareDTO       `json:"HomeTeam"`
+	OppositeTeam       TeamGetBareDTO       `json:"OppositeTeam"`
+	ResponsableTeacher TeacherGetBareDTO    `json:"ResponsableTeacher"`
+	Discipline         DisciplineGetBareDTO `json:"Discipline"`
 }
 
 type EventGetDTO struct {
-	ID                 RegularIDs           `json:"id"`
-	Name               string               `json:"name"`
-	Date               time.Time            `json:"date"`
-	Status             string               `json:"status"`
-	Observation        string               `json:"observation"`
-	Ubication          string               `json:"ubication"`
-	HomePoints         uint8                `json:"home_points"`
-	OppositePoints     uint8                `json:"opposite_points"`
-	HomeTeam           TeamGetBareDTO       `json:"home_team"`
-	OppositeTeam       TeamGetBareDTO       `json:"opposite_team"`
-	Tourney            TourneyGetBareDTO    `json:"tourney"`
-	ResponsableTeacher TeacherGetBareDTO    `json:"responsable_teacher"`
-	Discipline         DisciplineGetBareDTO `json:"discipline"`
+	ID                 RegularIDs           `json:"ID"`
+	Name               string               `json:"Name"`
+	Date               time.Time            `json:"Date"`
+	Status             string               `json:"Status"`
+	Observation        string               `json:"Observation"`
+	Ubication          string               `json:"Ubication"`
+	HomePoints         uint8                `json:"HomePoints"`
+	OppositePoints     uint8                `json:"OppositePoints"`
+	HomeTeam           TeamGetBareDTO       `json:"HomeTeam"`
+	OppositeTeam       TeamGetBareDTO       `json:"OppositeTeam"`
+	Tourney            TourneyGetBareDTO    `json:"Tourney"`
+	ResponsableTeacher TeacherGetBareDTO    `json:"ResponsableTeacher"`
+	Discipline         DisciplineGetBareDTO `json:"Discipline"`
 }
