@@ -51,7 +51,7 @@ func main() {
 	teamService := services.TeamServices{DB: db}
 	teamHandler := handlers.NewTeamHandler(&teamService)
 
-	eventService := services.EventService{DB:db}
+	eventService := services.EventService{DB: db}
 	eventHandlers := handlers.NewEventHandler(&eventService)
 
 	r := gin.Default()
@@ -73,7 +73,7 @@ func main() {
 	routes.RegisterTourney(r.Group("/tourneys"), tourneyHandler)
 	routes.RegisterTeacherRoutes(r.Group("/teachers"), teacherHandler)
 	routes.RegisterTeamRoutes(r.Group("/teams"), teamHandler)
-	routes.RegisterEventsRouters(r.Group("/events"),eventHandlers)
+	routes.RegisterEventsRouters(r.Group("/events"), eventHandlers)
 	log.Println(" Server corriendo en http://localhost:8080")
 	r.Run(":8080")
 }
@@ -165,8 +165,8 @@ func seedDatabase(db *gorm.DB) error {
 		atletas = append(atletas, Athlete{
 			FirstNames:      faker.FirstName(),
 			LastNames:       faker.LastName() + " " + faker.LastName(),
-			PhoneNumber:        faker.Phone(),
-			Enrolled:      faker.Bool(),
+			PhoneNumber:     faker.Phone(),
+			Enrolled:        faker.Bool(),
 			Email:           faker.Email(),
 			Gender:          gender,
 			InscriptionDate: faker.DateRange(time.Now().AddDate(-2, 0, 0), time.Now()),
@@ -186,11 +186,11 @@ func seedDatabase(db *gorm.DB) error {
 		GovId := strconv.Itoa(faker.IntRange(15000000, 25000000) + i)
 		GovId = "V-" + GovId
 		profesores = append(profesores, Teacher{
-			FirstNames: faker.FirstName(),
-			LastNames:  faker.LastName() + " " + faker.LastName(),
-			PhoneNumber:   faker.Phone(),
-			Email:      faker.Email(),
-			GovID:      GovId,
+			FirstNames:  faker.FirstName(),
+			LastNames:   faker.LastName() + " " + faker.LastName(),
+			PhoneNumber: faker.Phone(),
+			Email:       faker.Email(),
+			GovID:       GovId,
 		})
 	}
 	if err := db.Create(&profesores).Error; err != nil {
@@ -201,10 +201,10 @@ func seedDatabase(db *gorm.DB) error {
 	// Seed Tourneys
 	torneos := []Tourney{
 		{Name: "Juegos Interuniversitarios Nacional", Status: StatusOFF},
-		{Name: "Copa Universitaria Regional",Status: StatusON},
-		{Name: "Torneo de Verano",Status: StatusWait},
-		{Name: "Campeonato Nacional Universitario",Status: StatusOFF},
-		{Name: "Liga Universitaria",Status: StatusON},
+		{Name: "Copa Universitaria Regional", Status: StatusON},
+		{Name: "Torneo de Verano", Status: StatusWait},
+		{Name: "Campeonato Nacional Universitario", Status: StatusOFF},
+		{Name: "Liga Universitaria", Status: StatusON},
 	}
 	if err := db.Create(&torneos).Error; err != nil {
 		return err

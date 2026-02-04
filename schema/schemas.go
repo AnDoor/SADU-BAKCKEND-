@@ -56,7 +56,7 @@ type Athlete struct {
 	Gender          Gender    `gorm:"index;type:gender"`
 	InscriptionDate time.Time // Fecha de inscripcion
 	Regular         bool      // Titular
-	GovID           string    `gorm:"unique;not null"` // Cedula
+	GovID           string    //`gorm:"unique;not null"` // Cedula
 	MajorID         RegularIDs
 	Teams           []Team       `gorm:"many2many:athlete_teams;"`
 	Events          []Event      `gorm:"many2many:athlete_events;"` // foreignKey:AthleteID
