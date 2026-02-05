@@ -79,7 +79,7 @@ type Teacher struct {
 	LastNames   string
 	PhoneNumber string
 	Email       string
-	GovID       string       `gorm:"unique;not null"` // Cedula
+	GovID       string       //`gorm:"unique;not null"` // Cedula
 	Events      []Event      `gorm:"foreignKey:ResponsableTeacherID"`
 	Disciplines []Discipline `gorm:"many2many:teacher_disciplines;"`
 }

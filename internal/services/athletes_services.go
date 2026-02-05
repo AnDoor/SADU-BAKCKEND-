@@ -82,15 +82,15 @@ func (s *AthleteService) CreateAthlete(a schema.Athlete) (schema.Athlete, error)
 	}
 
 	if len(a.Disciplines) > 0 {
-		s.DB.Model(&a).Association("Disciplines").Append(a.Disciplines)
+		s.DB.Model(&a).Preload("Disciplines").Association("Disciplines").Append(a.Disciplines)
 	}
 
 	if len(a.Events) > 0 {
-		s.DB.Model(&a).Association("Events").Append(a.Events)
+		s.DB.Model(&a).Preload("Events").Association("Events").Append(a.Events)
 	}
 
 	if len(a.Teams) > 0 {
-		s.DB.Model(&a).Association("Teams").Append(a.Teams)
+		s.DB.Model(&a).Preload("Teams").Association("Teams").Append(a.Teams)
 	}
 	return a, nil
 }
