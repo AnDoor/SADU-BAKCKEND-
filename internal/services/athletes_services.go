@@ -111,7 +111,7 @@ func (s *AthleteService) EditAthlete(a schema.Athlete, c *gin.Context) (schema.A
     }
 
 	//Actualizar campos escalares
-    s.DB.Model(&athlete).Select("FirstNames", "LastNames", "Email").Updates(&a)
+    s.DB.Model(&athlete).Updates(&a)
 
 	if len(a.Teams) > 0 {
         s.DB.Model(&athlete).Association("Teams").Replace(a.Teams)
