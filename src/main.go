@@ -16,7 +16,7 @@ func main() {
 	config.LoadEnv()
 	config.ConnectDB()
 	config.SyncDB()
-	
+
 	r := gin.Default()
 	//configuracion de CORS
 	r.Use(cors.New(cors.Config{
@@ -64,4 +64,6 @@ func main() {
 	log.Println(" Server corriendo en http://localhost:8080")
 	r.Run(":8080")
 	println("Exitted")
+
+	
 }

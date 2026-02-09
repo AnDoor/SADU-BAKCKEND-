@@ -51,14 +51,14 @@ func (h *TeacherHandler) GetTeacherByIdHandler(ctx *gin.Context) {
 
 func (h *TeacherHandler) CreateTeacherHandler(ctx *gin.Context) {
 
-	var teacherDTO schema.TeacherCreateDTO
+	var teacher schema.Teacher
 
-	if err := ctx.ShouldBindJSON(&teacherDTO); err != nil {
+	if err := ctx.ShouldBindJSON(&teacher); err != nil {
 		helpers.SendError(ctx, http.StatusNotFound, "Error de busqueda en la base de datos", "El profesor ya fue creado anteriormente o no fue encontrado.")
 		return
 	}
 
-	dto, err := h.service.CreateTeacher(teacherDTO)
+	dto, err := h.service.CreateTeacher(teacher)
 	if err != nil {
 		helpers.SendError(ctx, http.StatusInternalServerError, "Error interno del servidor", "Datos incorrectos ingresados en la creacion del profesor.")
 		return

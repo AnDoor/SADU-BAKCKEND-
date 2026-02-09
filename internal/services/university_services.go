@@ -61,37 +61,41 @@ func (s *UniversityServices) GetUniversityByID(ctx *gin.Context) (schema.Univers
 	return universities, nil
 }
 
-func (s *UniversityServices) CreateUniversity(u schema.University) (schema.UniversityGetBareDTO, error) {
+func (s *UniversityServices) CreateUniversity(u schema.University) (schema.University, error) {
 
-	if err := s.DB.Create(&u).Error; err != nil {
-		return schema.UniversityGetBareDTO{}, fmt.Errorf("error creando universidad: %v", err)
+	if err := s.DB.Omit("Teams").Create(&u).Error; err != nil {
+		return schema.University{}, fmt.Errorf("error creando universidad: %v", err)
+	}
+	if len(u.Teams) > 0 {
+		s.DB.Model(&u).Preload("Teams").Association("Teams").Append(u.Teams)
 	}
 
-	return schema.UniversityGetBareDTO{
-		ID:    schema.RegularIDs(u.ID),
-		Name:  u.Name,
-		Local: u.Local,
-	}, nil
+	return u, nil
 
 }
 
-func (s *UniversityServices) EditUniversity(u schema.University, ctx *gin.Context) (schema.UniversityGetBareDTO, error) {
+func (s *UniversityServices) EditUniversity(u schema.University, ctx *gin.Context) (schema.University, error) {
 	var id = ctx.Param("id")
+	var uni schema.University
 
-	universityID, err := strconv.Atoi(id)
-	if err != nil {
-		return schema.UniversityGetBareDTO{}, fmt.Errorf("ERROR: Editing university: %v", err)
+	
+	if err := s.DB.Preload("Teams").First(&uni, id).Error; err != nil {
+		return schema.University{}, fmt.Errorf("universidad no encontrada: %w", err)
 	}
 
-	if result := s.DB.Model(&schema.University{}).Where("id =?", universityID).Updates(&u); result.Error != nil {
-		return schema.UniversityGetBareDTO{}, result.Error
+	if err := s.DB.Model(&uni).Select("Name").Updates(u).Error; err != nil {
+		return schema.University{}, err
 	}
 
-	return schema.UniversityGetBareDTO{
-		Name:  u.Name,
-		Local: u.Local,
-		ID:    schema.RegularIDs(u.ID),
-	}, nil
+	if u.Teams != nil {
+		
+		if err := s.DB.Model(&uni).Association("Teams").Replace(u.Teams); err != nil {
+			return schema.University{}, err
+		}
+	}
+
+	err := s.DB.Preload("Teams").First(&uni, id).Error
+	return uni, err
 }
 
 func (s *UniversityServices) DeleteUniversity(ctx *gin.Context) error {

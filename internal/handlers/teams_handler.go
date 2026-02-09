@@ -54,21 +54,21 @@ func (h *TeamHandler) GetTeamByIdHandler(ctx *gin.Context) {
 
 func (h *TeamHandler) CreateTeamHandler(ctx *gin.Context) {
 
-	var input schema.TeamPostDTO
-	
+	var input schema.Team
+
 	if err := ctx.ShouldBindJSON(&input); err != nil {
-		helpers.SendError(ctx, http.StatusNotFound, "Error interno del servidor", "El equipo ya fue creado anteriormente o no fue encontrado.")
+		helpers.SendError(ctx, http.StatusBadRequest, "Datos inválidos", "El formato del equipo enviado no es correcto.")
 		return
 	}
 
 	team, err := h.service.CreateTeam(input)
 	if err != nil {
+		errLower := strings.ToLower(err.Error())
+		if strings.Contains(errLower, "not found") ||
+			strings.Contains(errLower, "duplicate") ||
+			strings.Contains(errLower, "foreign key") {
 
-		if strings.Contains(err.Error(), "discipline") && strings.Contains(err.Error(), "not found") ||
-			strings.Contains(err.Error(), "university") && strings.Contains(err.Error(), "not found") ||
-			strings.Contains(err.Error(), "athlete") && strings.Contains(err.Error(), "not found") ||
-			strings.Contains(err.Error(), "creating team") {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			helpers.SendError(ctx, http.StatusBadRequest, "Error de validación", err.Error())
 			return
 		}
 
@@ -78,12 +78,39 @@ func (h *TeamHandler) CreateTeamHandler(ctx *gin.Context) {
 	helpers.SendSucces(ctx, "Team-Created-Succesfully.", team)
 }
 
+func (h *TeamHandler) EditTeamHandler(ctx *gin.Context) {
+  
+    var input schema.Team
+
+    if err := ctx.ShouldBindJSON(&input); err != nil {
+        helpers.SendError(ctx, http.StatusBadRequest, "Datos de entrada inválidos", "El formato del JSON enviado no coincide con la estructura de un equipo.")
+        return
+    }
+
+    updatedTeam, err := h.service.EditTeam(input, ctx)
+    
+    if err != nil {
+       
+        if strings.Contains(strings.ToLower(err.Error()), "no encontrado") {
+            helpers.SendError(ctx, http.StatusNotFound, "Equipo no encontrado", err.Error())
+            return
+        }
+
+       
+        helpers.SendError(ctx, http.StatusInternalServerError, "Error al actualizar equipo", "Ocurrió un error inesperado al procesar la edición.")
+        return
+    }
+
+    
+    helpers.SendSucces(ctx, "Equipo actualizado exitosamente.", updatedTeam)
+}
+
 func (h *TeamHandler) DeleteTeam(ctx *gin.Context) {
 	err := h.service.DeleteTeam(ctx)
 	if err != nil {
 
 		if strings.Contains(err.Error(), "invalid team ID.") {
-			helpers.SendError(ctx, http.StatusBadRequest, "Error interno del servidor", "El ID del equipo no fue encontrado en la base de datos, invalido ID.")
+			helpers.SendError(ctx, http.StatusBadRequest, "Datos de entrada inválidos", "El ID del equipo no fue encontrado en la base de datos, invalido ID.")
 			return
 		}
 		if strings.Contains(err.Error(), "team") && strings.Contains(err.Error(), "not found.") ||
@@ -92,12 +119,12 @@ func (h *TeamHandler) DeleteTeam(ctx *gin.Context) {
 			return
 		}
 		if strings.Contains(err.Error(), "deleting team.") {
-					helpers.SendError(ctx, http.StatusBadRequest, "Error interno del servidor", "Error eliminando el equipo seleccionado, el equipo ya fue eliminado.")
+			helpers.SendError(ctx, http.StatusBadRequest, "Error interno del servidor", "Error eliminando el equipo seleccionado, el equipo ya fue eliminado.")
 			return
 		}
 
 		helpers.SendError(ctx, http.StatusBadRequest, "Error interno del servidor", "Error eliminando el equipo seleccionado.")
 		return
 	}
-	helpers.SendSucces(ctx, "Team-Deleted-Succesfully.","")
+	helpers.SendSucces(ctx, "Team-Deleted-Succesfully.", "")
 }

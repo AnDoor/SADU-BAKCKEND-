@@ -72,43 +72,42 @@ func (s *TourneyServices) GetTourneyByID(ctx *gin.Context) (schema.TourneyGetFul
 	}, nil
 }
 
-func (s *TourneyServices) CreateTourney(t schema.Tourney) (schema.TourneyGetFullDTO, error) {
+func (s *TourneyServices) CreateTourney(t schema.Tourney) (schema.Tourney, error) {
 
-	result := s.DB.Create(&t)
+	result := s.DB.Omit("Events").Create(&t)
 	if result.Error != nil || result.RowsAffected == 0 {
-		return schema.TourneyGetFullDTO{}, result.Error
+		return schema.Tourney{}, result.Error
 	}
 
-	return schema.TourneyGetFullDTO{
-		ID:     schema.RegularIDs(t.ID),
-		Name:   t.Name,
-		Events: helpers.MapEventsBare(t.Events),
-	}, nil
+	if len(t.Events) > 0 {
+		s.DB.Model(&t).Preload("Events").Association("Events").Append(t.Events)
+	}
+	return t, nil
 }
-func (s *TourneyServices) UpdateTourney(t schema.Tourney, ctx *gin.Context) (schema.TourneyGetFullDTO, error) {
+
+func (s *TourneyServices) UpdateTourney(t schema.Tourney, ctx *gin.Context) (schema.Tourney, error) {
 	var id = ctx.Param("id")
-	tourneyID, err := strconv.Atoi(id)
-
-	if err != nil {
-		return schema.TourneyGetFullDTO{}, fmt.Errorf("invalid team ID: %w", err)
-	}
-
-	result := s.DB.Model(&schema.Tourney{}).Where("id = ?", tourneyID).Updates(&t)
-
-	if result.Error != nil || result.RowsAffected == 0 {
-		return schema.TourneyGetFullDTO{}, fmt.Errorf("tourney not found or update failed: %w", result.Error)
-	}
-
+	
 	var updateTourney schema.Tourney
-	if err := s.DB.Preload("Events").First(&updateTourney, tourneyID).Error; err != nil {
-		return schema.TourneyGetFullDTO{}, err
+
+	if err := s.DB.First(&updateTourney, id).Error; err != nil {
+        return schema.Tourney{}, fmt.Errorf("torneo no encontrado: %w", err)
+    }
+
+	if result := s.DB.Model(&updateTourney).Omit("Events").Where("id = ?", id).Updates(&t).Error; 
+	 result != nil {
+		return schema.Tourney{}, result
 	}
-	dto := schema.TourneyGetFullDTO{
-		ID:     schema.RegularIDs(updateTourney.ID),
-		Name:   updateTourney.Name,
-		Events: helpers.MapEventsBare(updateTourney.Events),
+
+	if t.Events != nil {
+		if err := s.DB.Model(&updateTourney).Association("Events").Replace(t.Events); err != nil {
+			return schema.Tourney{}, fmt.Errorf("error actualizando eventos: %w", err)
+		}
 	}
-	return dto, nil
+
+	err := s.DB.Preload("Events").First(&updateTourney, id).Error
+
+	return updateTourney, err
 
 }
 

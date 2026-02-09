@@ -26,9 +26,9 @@ func (s *MajorServices) GetAllMajor(name string) ([]schema.MajorGetDTO, error) {
 		query = query.Where("name LIKE ?", "%"+name+"%")
 	}
 	if err := query.Find(&dtos).Error; err != nil {
-        return nil, err
-    }
-	return dtos,nil
+		return nil, err
+	}
+	return dtos, nil
 }
 
 func (s *MajorServices) GetMajorByID(ctx *gin.Context) (schema.Major, error) {
@@ -63,7 +63,7 @@ func (s *MajorServices) CreateMajor(m schema.Major) (schema.Major, error) {
 }
 
 func (s *MajorServices) EditMajor(m schema.Major, ctx *gin.Context) (schema.Major, error) {
-	var id = ctx.Param("id")
+var id = ctx.Param("id")
 	majorID, err := strconv.Atoi(id)
 
 	if err != nil {
