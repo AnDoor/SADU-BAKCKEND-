@@ -21,9 +21,9 @@ func NewAthleteService() *AthleteService {
 
 //GET  METHOD
 
-func GetAllAthletes(name, lastname, govID string) ([]schema.AthleteDTO, error) {
+func (s *AthleteService) GetAllAthletes(name, lastname, govID string) ([]schema.AthleteDTO, error) {
 	var athletes []schema.Athlete
-	query := config.DB.Model(&schema.Athlete{}).Omit("Discipline")
+	query := s.DB.Model(&schema.Athlete{}).Omit("Discipline")
 
 	if name != "" {
 		query = query.Where("first_names LIKE ?", "%"+name+"%")
@@ -59,7 +59,7 @@ func GetAllAthletes(name, lastname, govID string) ([]schema.AthleteDTO, error) {
 func (s *AthleteService) GetAthletesByID(ctx *gin.Context) (schema.Athlete, error) {
 	var id = ctx.Param("id")
 	athleteID, err := strconv.Atoi(id)
-	
+
 	//.Preload("Teams.Discipline.Teams")
 	query := s.DB.Preload("Teams.University", nil).Preload("Teams.Discipline", nil).Preload("Teams", nil).Preload("Disciplines").Preload("Events")
 
