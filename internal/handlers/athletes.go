@@ -22,10 +22,10 @@ func NewAthleteHandler(service *services.AthleteService) *AthleteHandler {
 
 func (h *AthleteHandler) GetAthletes(ctx *gin.Context) {
 	name := ctx.Query("name")
-    lastName := ctx.Query("lastname")
-    govID := ctx.Query("govid")
+	lastName := ctx.Query("lastname")
+	govID := ctx.Query("govid")
 
-	athletes, err := h.service.GetAllAthletes(name,lastName,govID)
+	athletes, err := h.service.GetAllAthletes(name, lastName, govID)
 
 	if err != nil {
 		log.Printf("Error getting athletes: %v", err)
@@ -36,7 +36,7 @@ func (h *AthleteHandler) GetAthletes(ctx *gin.Context) {
 }
 
 func (h *AthleteHandler) GetAthletesByID(ctx *gin.Context) {
-	 
+
 	athletes, err := h.service.GetAthletesByID(ctx)
 	if err != nil {
 		helpers.SendError(ctx, http.StatusInternalServerError, "ERROR IN HANDLER\nError listin athletes by ID")

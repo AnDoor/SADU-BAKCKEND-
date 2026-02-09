@@ -1,6 +1,21 @@
 package schema
 
-import "time"
+import (
+	"time"
+
+	"github.com/dgrijalva/jwt-go"
+)
+
+type LoginDTO struct {
+	Username string `json:"username" binding:"required"`
+	Password string `json:"password" binding:"required"`
+}
+
+type Claims struct {
+	UserId   uint   `json:"user_id" binding:"required"`
+	Username string `json:"username"`
+	jwt.StandardClaims
+}
 
 type AthleteDTO struct {
 	ID          RegularIDs `json:"ID"`

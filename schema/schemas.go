@@ -6,6 +6,15 @@ import (
 	"gorm.io/gorm"
 )
 
+type User struct {
+	gorm.Model
+	Username         string
+	DisplayName      string
+	Email            string
+	Password         string
+	Description      string
+}
+
 // Status represents the possible states of an item
 type Gender string
 type Status string
