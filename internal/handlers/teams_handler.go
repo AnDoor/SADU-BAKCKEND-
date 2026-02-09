@@ -55,7 +55,7 @@ func (h *TeamHandler) GetTeamByIdHandler(ctx *gin.Context) {
 func (h *TeamHandler) CreateTeamHandler(ctx *gin.Context) {
 
 	var input schema.TeamPostDTO
-	
+
 	if err := ctx.ShouldBindJSON(&input); err != nil {
 		helpers.SendError(ctx, http.StatusNotFound, "Error interno del servidor", "El equipo ya fue creado anteriormente o no fue encontrado.")
 		return
@@ -92,12 +92,12 @@ func (h *TeamHandler) DeleteTeam(ctx *gin.Context) {
 			return
 		}
 		if strings.Contains(err.Error(), "deleting team.") {
-					helpers.SendError(ctx, http.StatusBadRequest, "Error interno del servidor", "Error eliminando el equipo seleccionado, el equipo ya fue eliminado.")
+			helpers.SendError(ctx, http.StatusBadRequest, "Error interno del servidor", "Error eliminando el equipo seleccionado, el equipo ya fue eliminado.")
 			return
 		}
 
 		helpers.SendError(ctx, http.StatusBadRequest, "Error interno del servidor", "Error eliminando el equipo seleccionado.")
 		return
 	}
-	helpers.SendSucces(ctx, "Team-Deleted-Succesfully.","")
+	helpers.SendSucces(ctx, "Team-Deleted-Succesfully.", "")
 }

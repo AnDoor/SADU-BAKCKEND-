@@ -28,14 +28,8 @@ func main() {
 		MaxAge:           12 * time.Hour,
 	}))
 
-	athleteService := services.AthleteService{DB: config.DB}
-	athleteHandler := handlers.NewAthleteHandler(&athleteService)
-
 	universityService := services.UniversityServices{DB: config.DB}
 	universityHandler := handlers.NewUniversityHandler(&universityService)
-
-	disciplineService := services.DisciplineServices{DB: config.DB}
-	disciplineHandler := handlers.NewDisciplineHandler(&disciplineService)
 
 	majorService := services.MajorServices{DB: config.DB}
 	majorHandler := handlers.NewMajorHandler(&majorService)
@@ -53,9 +47,9 @@ func main() {
 	eventHandlers := handlers.NewEventHandler(&eventService)
 
 	/*rutas*/
-	routes.RegisterAthletesRoutes(r.Group("/athletes"), athleteHandler)
+	routes.RegisterAthletesRoutes(r.Group("/athletes"))
 	routes.RegisterUniversityRoutes(r.Group("/universities"), universityHandler)
-	routes.RegisterDisciplines(r.Group("/disciplines"), disciplineHandler)
+	routes.RegisterDisciplines(r.Group("/disciplines"))
 	routes.RegisterMajorsRoutes(r.Group("/majors"), majorHandler)
 	routes.RegisterTourney(r.Group("/tourneys"), tourneyHandler)
 	routes.RegisterTeacherRoutes(r.Group("/teachers"), teacherHandler)

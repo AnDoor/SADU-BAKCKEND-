@@ -5,25 +5,15 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 	"uneg.edu.ve/servicio-sadu-back/config"
 	"uneg.edu.ve/servicio-sadu-back/schema"
 )
 
-// conexión a la DB
-type AthleteService struct {
-	DB *gorm.DB
-}
-
-func NewAthleteService() *AthleteService {
-	return &AthleteService{DB: config.DB}
-}
-
 //GET  METHOD
 
-func (s *AthleteService) GetAllAthletes(name, lastname, govID string) ([]schema.AthleteDTO, error) {
+func GetAllAthletes(name, lastname, govID string) ([]schema.AthleteDTO, error) {
 	var athletes []schema.Athlete
-	query := s.DB.Model(&schema.Athlete{}).Omit("Discipline")
+	query := config.DB.Model(&schema.Athlete{}).Omit("Discipline")
 
 	if name != "" {
 		query = query.Where("first_names LIKE ?", "%"+name+"%")
@@ -56,12 +46,12 @@ func (s *AthleteService) GetAllAthletes(name, lastname, govID string) ([]schema.
 }
 
 // GET BY ID
-func (s *AthleteService) GetAthletesByID(ctx *gin.Context) (schema.Athlete, error) {
+func  GetAthletesByID(ctx *gin.Context) (schema.Athlete, error) {
 	var id = ctx.Param("id")
 	athleteID, err := strconv.Atoi(id)
 
 	//.Preload("Teams.Discipline.Teams")
-	query := s.DB.Preload("Teams.University", nil).Preload("Teams.Discipline", nil).Preload("Teams", nil).Preload("Disciplines").Preload("Events")
+	query := config.DB.Preload("Teams.University", nil).Preload("Teams.Discipline", nil).Preload("Teams", nil).Preload("Disciplines").Preload("Events")
 
 	if err != nil {
 		return schema.Athlete{}, fmt.Errorf("ID invalido: %v", err)
@@ -77,27 +67,27 @@ func (s *AthleteService) GetAthletesByID(ctx *gin.Context) (schema.Athlete, erro
 }
 
 // POST METHOD
-func (s *AthleteService) CreateAthlete(a schema.Athlete) (schema.Athlete, error) {
-	if err := s.DB.Omit("Teams", "Events", "Disciplines").Create(&a).Error; err != nil {
+func  CreateAthlete(a schema.Athlete) (schema.Athlete, error) {
+	if err := config.DB.Omit("Teams", "Events", "Disciplines").Create(&a).Error; err != nil {
 		return a, err
 	}
 
 	if len(a.Disciplines) > 0 {
-		s.DB.Model(&a).Preload("Disciplines").Association("Disciplines").Append(a.Disciplines)
+		config.DB.Model(&a).Preload("Disciplines").Association("Disciplines").Append(a.Disciplines)
 	}
 
 	if len(a.Events) > 0 {
-		s.DB.Model(&a).Preload("Events").Association("Events").Append(a.Events)
+		config.DB.Model(&a).Preload("Events").Association("Events").Append(a.Events)
 	}
 
 	if len(a.Teams) > 0 {
-		s.DB.Model(&a).Preload("Teams").Association("Teams").Append(a.Teams)
+		config.DB.Model(&a).Preload("Teams").Association("Teams").Append(a.Teams)
 	}
 	return a, nil
 }
 
 // PUT METHOD
-func (s *AthleteService) EditAthlete(a schema.Athlete, ctx *gin.Context) (schema.Athlete, error) {
+func  EditAthlete(a schema.Athlete, ctx *gin.Context) (schema.Athlete, error) {
 	var id = ctx.Param("id")
 	athleteID, err := strconv.Atoi(id)
 
@@ -106,36 +96,36 @@ func (s *AthleteService) EditAthlete(a schema.Athlete, ctx *gin.Context) (schema
 	}
 
 	var athlete schema.Athlete
-	if err := s.DB.First(&athlete, athleteID).Error; err != nil {
+	if err := config.DB.First(&athlete, athleteID).Error; err != nil {
 		return schema.Athlete{}, fmt.Errorf("atleta no encontrado: %d", athleteID)
 	}
 
 	//Actualizar campos escalares
-	s.DB.Model(&athlete).Updates(&a)
+	config.DB.Model(&athlete).Updates(&a)
 
 	if len(a.Teams) > 0 {
-		s.DB.Model(&athlete).Association("Teams").Replace(a.Teams)
+		config.DB.Model(&athlete).Association("Teams").Replace(a.Teams)
 	}
 
 	if len(a.Disciplines) > 0 {
-		s.DB.Model(&athlete).Association("Disciplines").Replace(a.Disciplines)
+		config.DB.Model(&athlete).Association("Disciplines").Replace(a.Disciplines)
 	}
 	if len(a.Events) > 0 {
-		s.DB.Model(&athlete).Association("Events").Replace(a.Events)
+		config.DB.Model(&athlete).Association("Events").Replace(a.Events)
 	}
 
-	return athlete, s.DB.Preload("Teams").Preload("Disciplines").Preload("Events").First(&athlete, athleteID).Error
+	return athlete, config.DB.Preload("Teams").Preload("Disciplines").Preload("Events").First(&athlete, athleteID).Error
 }
 
 // DELETE METHOD
-func (s *AthleteService) DeleteAthlete(ctx *gin.Context) error {
+func  DeleteAthlete(ctx *gin.Context) error {
 	var id = ctx.Param("id")
 	athleteID, err := strconv.Atoi(id)
 
 	if err != nil {
 		return fmt.Errorf("ID inválido: %w", err)
 	}
-	result := s.DB.Delete(&schema.Athlete{}, athleteID)
+	result := config.DB.Delete(&schema.Athlete{}, athleteID)
 	if result != nil {
 		return result.Error
 	}

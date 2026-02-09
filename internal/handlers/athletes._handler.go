@@ -10,22 +10,13 @@ import (
 	"uneg.edu.ve/servicio-sadu-back/schema"
 )
 
-type AthleteHandler struct {
-	service *services.AthleteService
-}
 
-func NewAthleteHandler(service *services.AthleteService) *AthleteHandler {
-	return &AthleteHandler{
-		service: service,
-	}
-}
-
-func (h *AthleteHandler) GetAthletes(ctx *gin.Context) {
+func  GetAthletes(ctx *gin.Context) {
 	name := ctx.Query("name")
 	lastName := ctx.Query("lastname")
 	govID := ctx.Query("govid")
 
-	athletes, err := h.service.GetAllAthletes(name, lastName, govID)
+	athletes, err := services.GetAllAthletes(name, lastName, govID)
 
 	if err != nil {
 		log.Printf("Error getting athletes: %v", err)
@@ -36,9 +27,9 @@ func (h *AthleteHandler) GetAthletes(ctx *gin.Context) {
 	helpers.SendSucces(ctx, "listing-athletes", athletes)
 }
 
-func (h *AthleteHandler) GetAthletesByID(ctx *gin.Context) {
+func  GetAthletesByID(ctx *gin.Context) {
 
-	athletes, err := h.service.GetAthletesByID(ctx)
+	athletes, err := services.GetAthletesByID(ctx)
 	if err != nil {
 		helpers.SendError(ctx, http.StatusNotFound, "Error de busqueda en la base de datos", "El ID del atleta esta mal escrito o no existe")
 		return
@@ -47,7 +38,7 @@ func (h *AthleteHandler) GetAthletesByID(ctx *gin.Context) {
 }
 
 
-func (h *AthleteHandler) CreateNewAthlete(ctx *gin.Context) {
+func  CreateNewAthlete(ctx *gin.Context) {
 	// 1. BIND JSON  OBTENER DATOS del request
 	var newAthlete schema.Athlete
 	if err := ctx.ShouldBindJSON(&newAthlete); err != nil {
@@ -55,7 +46,7 @@ func (h *AthleteHandler) CreateNewAthlete(ctx *gin.Context) {
 		return
 	}
 
-	createdAthlete, err := h.service.CreateAthlete(newAthlete)
+	createdAthlete, err := services.CreateAthlete(newAthlete)
 	if err != nil {
 		helpers.SendError(ctx, http.StatusInternalServerError, "Error interno del servidor", "Dato incorrecto ingresado, el atleta ya fue creado O problema inesperado")
 		return
@@ -63,14 +54,14 @@ func (h *AthleteHandler) CreateNewAthlete(ctx *gin.Context) {
 
 	helpers.SendSucces(ctx, "Atleta creado exitosamente", createdAthlete)
 }
-func (h *AthleteHandler) EditAthleteByID(ctx *gin.Context) {
+func EditAthleteByID(ctx *gin.Context) {
 
 	var athlete schema.Athlete
 	if err := ctx.ShouldBindJSON(&athlete); err != nil {
 		helpers.SendError(ctx, http.StatusNotFound, "Error de busqueda en la base de datos", "Los datos del atleta no cargaron y no se encontraron en la Base de datos")
 		return
 	}
-	updateAthlete, err := h.service.EditAthlete(athlete, ctx)
+	updateAthlete, err := services.EditAthlete(athlete, ctx)
 	if err != nil {
 		helpers.SendError(ctx, http.StatusInternalServerError, "Error interno del servidor", "Datos incorrectos ingresados en la edicion de atletas")
 		return
@@ -79,9 +70,9 @@ func (h *AthleteHandler) EditAthleteByID(ctx *gin.Context) {
 
 }
 
-func (h *AthleteHandler) DeleteAthleteByID(ctx *gin.Context) {
+func  DeleteAthleteByID(ctx *gin.Context) {
 
-	if err := h.service.DeleteAthlete(ctx); err != nil {
+	if err := services.DeleteAthlete(ctx); err != nil {
 		helpers.SendError(ctx, http.StatusNotFound, "Error de busqueda en la base de datos", "Los datos del atleta no cargaron y no se encontraron en la Base de datos para eliminarlo")
 		return
 	}
