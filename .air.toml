@@ -2,7 +2,7 @@ root = "."
 tmp_dir = "tmp"
 
 [build]
-  cmd = "cmd /c \"go build -o tmp\\main.exe ./seed\""
+  cmd = "cmd /c \"go build -o tmp\\main.exe ./src\""
   bin = "tmp\\main.exe"
   delay = 1000
   include_ext = ["go"]
