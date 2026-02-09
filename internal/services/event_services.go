@@ -47,8 +47,8 @@ func (s *EventService) GetAllEvents(name, status string) ([]schema.EventGetBareD
 
 	return eventDTO, nil
 }
-func (s *EventService) GetEventByID(c *gin.Context) ([]schema.EventGetDTO, error) {
-	id := c.Param("id")
+func (s *EventService) GetEventByID(ctx *gin.Context) ([]schema.EventGetDTO, error) {
+	id := ctx.Param("id")
 
 	var event []schema.Event
 
@@ -99,12 +99,12 @@ func (s *EventService) CreateEvent(event schema.Event) (schema.Event, error) {
 
 	return event, nil
 }
-func (s *EventService) EditEvent(c *gin.Context) (schema.Event, error) {
+func (s *EventService) EditEvent(ctx *gin.Context) (schema.Event, error) {
 
-	id := c.Param("id")
+	id := ctx.Param("id")
 	var input schema.Event
 
-	if err := c.ShouldBindJSON(&input); err != nil {
+	if err := ctx.ShouldBindJSON(&input); err != nil {
 		return schema.Event{}, err
 	}
 
@@ -143,8 +143,8 @@ func (s *EventService) EditEvent(c *gin.Context) (schema.Event, error) {
 	return existingEvent, nil
 
 }
-func (s *EventService) DeleteEvent(c *gin.Context) error {
-	id := c.Param("id")
+func (s *EventService) DeleteEvent(ctx *gin.Context) error {
+	id := ctx.Param("id")
 
 	result := s.DB.Delete(&schema.Event{}, id)
 

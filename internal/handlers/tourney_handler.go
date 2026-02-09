@@ -19,67 +19,68 @@ func NewTourneyHandler(service *services.TourneyServices) *TourneyHandler {
 	return &TourneyHandler{service: service}
 }
 
-func (h *TourneyHandler) GetAllTourneyHandler(c *gin.Context) {
-		name := c.Query("name")
-		status := c.Query("status")
+func (h *TourneyHandler) GetAllTourneyHandler(ctx *gin.Context) {
+	name := ctx.Query("name")
+	status := ctx.Query("status")
 
-	dtos, err := h.service.GetAllTourney(name,status)
+	dtos, err := h.service.GetAllTourney(name, status)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al obtener torneos"})
+		helpers.SendError(ctx, http.StatusInternalServerError, "Error interno del servidor", "Ocurrió un problema inesperado al procesar la lista de torneos.")
 		return
 	}
 
-	c.JSON(http.StatusOK, dtos)
+	helpers.SendSucces(ctx, "Listing-Tourneys-Succesfully", dtos)
 }
 
 func (h *TourneyHandler) GetTourneyByIdHandler(ctx *gin.Context) {
 	tourney, err := h.service.GetTourneyByID(ctx)
 	if err != nil {
-		helpers.SendError(ctx, http.StatusInternalServerError, "ERROR IN HANDLER\n Error listing by ID TOURNEYS")
+		helpers.SendError(ctx, http.StatusNotFound, "Error de busqueda", "El ID del equipo esta mal escrito o no se encuentra en la base de datos.")
 		return
 	}
-	helpers.SendSucces(ctx, "LISTING-TOURNEY-BY-ID", tourney)
+	helpers.SendSucces(ctx, "Listing-Tourneys-By-ID-Succesfully", tourney)
 }
 
 func (h *TourneyHandler) CreateUniversityHandler(ctx *gin.Context) {
 	var newTourney schema.Tourney
 	if err := ctx.ShouldBindJSON(&newTourney); err != nil {
-		helpers.SendError(ctx, http.StatusBadRequest, "JSON inválido: "+err.Error())
+		helpers.SendError(ctx, http.StatusBadRequest, "JSON inválido: "+ err.Error(),"El torneo ya fue creado anteriormente o no fue encontrado.")
 		return
 	}
 
 	createdTourney, err := h.service.CreateTourney(newTourney)
 	if err != nil {
-		helpers.SendError(ctx, http.StatusBadRequest, err.Error())
+		helpers.SendError(ctx, http.StatusInternalServerError, "Error interno del servidor", "El inesperado a la hora de crear torneo.")
 		return
 	}
 	helpers.SendSucces(ctx, "CREATING-TOURNEY-SUCCESFULLY", createdTourney)
 
 }
 
-func (h *TourneyHandler) UpdateTourneyHandler(c *gin.Context) {
+func (h *TourneyHandler) UpdateTourneyHandler(ctx *gin.Context) {
 
 	var t schema.Tourney
-	if err := c.ShouldBindJSON(&t); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := ctx.ShouldBindJSON(&t); err != nil {
+	helpers.SendError(ctx, http.StatusInternalServerError, "Error interno del servidor", "El torneo no fue encontrado en la base de datos.")
 		return
 	}
 
-	dto, err := h.service.UpdateTourney(t, c)
+	dto, err := h.service.UpdateTourney(t, ctx)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		helpers.SendError(ctx, http.StatusInternalServerError, "Error interno del servidor", "El inesperado a la hora de editar torneo.")
 		return
+	
 	}
-	c.JSON(http.StatusOK, gin.H{"data": dto})
+	helpers.SendSucces(ctx, "EDITING-TOURNEY-SUCCESFULLY", dto)
 
 }
 
 func (h *TourneyHandler) DeleteTourneyHandler(ctx *gin.Context) {
 	if err := h.service.DeleteTourney(ctx); err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			helpers.SendError(ctx, http.StatusNotFound, "Torneo no encontrada")
+			helpers.SendError(ctx, http.StatusNotFound, "Torneo no encontrada", "El ID del torneo esta mal escrito o es invalido para buscar el torneo en la base de datos")
 		} else {
-			helpers.SendError(ctx, http.StatusInternalServerError, err.Error())
+			helpers.SendError(ctx, http.StatusInternalServerError, err.Error(),"Error interno en el servidor: no se encuentra torneo para eliminar")
 		}
 		return
 	}

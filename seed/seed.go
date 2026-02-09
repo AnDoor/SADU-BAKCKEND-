@@ -6,12 +6,7 @@ import (
 	"time"
 
 	"github.com/brianvoe/gofakeit/v7"
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
 	"uneg.edu.ve/servicio-sadu-back/config"
-	"uneg.edu.ve/servicio-sadu-back/internal/handlers"
-	"uneg.edu.ve/servicio-sadu-back/internal/routes"
-	"uneg.edu.ve/servicio-sadu-back/internal/services"
 	"uneg.edu.ve/servicio-sadu-back/schema"
 	. "uneg.edu.ve/servicio-sadu-back/schema"
 

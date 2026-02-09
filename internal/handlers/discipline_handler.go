@@ -23,31 +23,31 @@ func (h *DisciplineHandler) GetAllDisciplineHandler(ctx *gin.Context) {
 	name := ctx.Query("name")
 	discipline, err := h.service.GetAllDisciplines(name)
 	if err != nil {
-		helpers.SendError(ctx, http.StatusInternalServerError, "ERROR IN HANDLER\n Error listing Disciplines")
+		helpers.SendError(ctx, http.StatusInternalServerError, "Error interno del servidor", "Ocurrió un problema inesperado al procesar la lista de disciplinas.")
 		return
 	}
-	helpers.SendSucces(ctx, "LISTIN DISCIPLINES SUCCESFULLY", discipline)
+	helpers.SendSucces(ctx, "LISTIN-DISCIPLINES-SUCCESFULLY", discipline)
 }
 
 func (h *DisciplineHandler) GetAllDisciplinesByIdHandler(ctx *gin.Context) {
 	discipline, err := h.service.GetAllDisciplinesByID(ctx)
 	if err != nil {
-		helpers.SendError(ctx, http.StatusInternalServerError, "ERROR IN HANDLER\n Error listing Disciplines")
+		helpers.SendError(ctx, http.StatusNotFound, "Error de busqueda en la base de datos", "El ID de la disciplina esta mal escrito o no existe")
 		return
 	}
-	helpers.SendSucces(ctx, "LISTIN DISCIPLINES BY ID SUCCESFULLY", discipline)
+	helpers.SendSucces(ctx, "LISTIN-DISCIPLINES-BY-ID-SUCCESFULLY", discipline)
 }
 
 func (h *DisciplineHandler) CreateDisciplineHandler(ctx *gin.Context) {
 	var newDiscipline schema.Discipline
 	if err := ctx.ShouldBindJSON(&newDiscipline); err != nil {
-		helpers.SendError(ctx, http.StatusBadRequest, "JSON inválido: "+err.Error())
+		helpers.SendError(ctx, http.StatusNotFound, "Error de busqueda en la base de datos", "Los datos de la disciplina no cargaron o no se encontraron en la Base de datos")
 		return
 	}
 
 	createdDiscipline, err := h.service.CreateDiscipline(newDiscipline)
 	if err != nil {
-		helpers.SendError(ctx, http.StatusBadRequest, err.Error())
+		helpers.SendError(ctx, http.StatusInternalServerError, "Error interno del servidor", "Datos incorrectos ingresado, la disciplina ya fue creado O problema inesperado")
 		return
 	}
 	helpers.SendSucces(ctx, "CREATING-DISCIPLINE-SUCCESFULLY", createdDiscipline)
@@ -56,13 +56,13 @@ func (h *DisciplineHandler) CreateDisciplineHandler(ctx *gin.Context) {
 func (h *DisciplineHandler) EditDisciplineHandler(ctx *gin.Context) {
 	var updateDiscipline schema.Discipline
 	if err := ctx.ShouldBindJSON(&updateDiscipline); err != nil {
-		helpers.SendError(ctx, http.StatusBadRequest, "JSON inválido: "+err.Error())
+		helpers.SendError(ctx, http.StatusNotFound, "Error de busqueda en la base de datos", "Los datos de la disciplina no cargaron o no se encontraron en la Base de datos")
 		return
 	}
 
 	createdDiscipline, err := h.service.EditDiscipline(updateDiscipline, ctx)
 	if err != nil {
-		helpers.SendError(ctx, http.StatusBadRequest, err.Error())
+		helpers.SendError(ctx, http.StatusInternalServerError, "Error interno del servidor", "Datos incorrectos ingresado o la disciplina no fue encontrada")
 		return
 	}
 	helpers.SendSucces(ctx, "EDITING-DISCIPLINE-SUCCESFULLY", createdDiscipline)
@@ -71,13 +71,11 @@ func (h *DisciplineHandler) EditDisciplineHandler(ctx *gin.Context) {
 func (h *DisciplineHandler) DeleteDisciplineHandler(ctx *gin.Context) {
 	if err := h.service.DeleteDiscipline(ctx); err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			helpers.SendError(ctx, http.StatusNotFound, "Discipline not found")
-		} else {
-			helpers.SendError(ctx, http.StatusInternalServerError, err.Error())
-		}
-		return
+			helpers.SendError(ctx, http.StatusNotFound, "Error de busqueda en la base de datos", "Los datos de la disciplina no cargaron o no se encontraron en la Base de datos")
+				return
+		} 
 	}
 
-	helpers.SendSucces(ctx, "Deleting university succesfully", "")
+	helpers.SendSucces(ctx, "DISCIPLINE-DELETED-SUCCESFULLY", "")
 
 }

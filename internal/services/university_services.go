@@ -18,16 +18,16 @@ func NewUniversityService() *UniversityServices {
 	return &UniversityServices{DB: config.DB}
 }
 
-func (s *UniversityServices) GetAllUniversity(name string,local string) ([]schema.UniversityGetBareDTO, error) {
+func (s *UniversityServices) GetAllUniversity(name string, local string) ([]schema.UniversityGetBareDTO, error) {
 	var universities []schema.University
-	query:= s.DB.Model(&schema.University{}).Preload("Teams", nil)
+	query := s.DB.Model(&schema.University{}).Preload("Teams", nil)
 
 	if name != "" {
-		query= query.Where("name LIKE ?","%"+name+"%")
+		query = query.Where("name LIKE ?", "%"+name+"%")
 	}
-		if local == "true" || local == "false" {
-			isLocal := local == "true"
-		query= query.Where("local = ?",isLocal)
+	if local == "true" || local == "false" {
+		isLocal := local == "true"
+		query = query.Where("local = ?", isLocal)
 	}
 	if err := query.Find(&universities).Error; err != nil {
 		return nil, err
@@ -44,8 +44,8 @@ func (s *UniversityServices) GetAllUniversity(name string,local string) ([]schem
 	return universitiesBareDTO, nil
 }
 
-func (s *UniversityServices) GetUniversityByID(c *gin.Context) (schema.University, error) {
-	var id = c.Param("id")
+func (s *UniversityServices) GetUniversityByID(ctx *gin.Context) (schema.University, error) {
+	var id = ctx.Param("id")
 
 	universityID, err := strconv.Atoi(id)
 
@@ -75,8 +75,8 @@ func (s *UniversityServices) CreateUniversity(u schema.University) (schema.Unive
 
 }
 
-func (s *UniversityServices) EditUniversity(u schema.University, c *gin.Context) (schema.UniversityGetBareDTO, error) {
-	var id = c.Param("id")
+func (s *UniversityServices) EditUniversity(u schema.University, ctx *gin.Context) (schema.UniversityGetBareDTO, error) {
+	var id = ctx.Param("id")
 
 	universityID, err := strconv.Atoi(id)
 	if err != nil {
@@ -94,8 +94,8 @@ func (s *UniversityServices) EditUniversity(u schema.University, c *gin.Context)
 	}, nil
 }
 
-func (s *UniversityServices) DeleteUniversity(c *gin.Context) error {
-	var id = c.Param("id")
+func (s *UniversityServices) DeleteUniversity(ctx *gin.Context) error {
+	var id = ctx.Param("id")
 	universityID, err := strconv.Atoi(id)
 	if err != nil {
 		return fmt.Errorf("ERROR: ID INVALID %v: %w", universityID, err)

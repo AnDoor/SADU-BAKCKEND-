@@ -20,12 +20,12 @@ func NewDisciplineServices() *DisciplineServices {
 
 func (d *DisciplineServices) GetAllDisciplines(name string) ([]schema.DisciplineGetBareDTO, error) {
 	var disciplines []schema.Discipline
-	query:= d.DB.Order("name").Preload("Teams", nil)
+	query := d.DB.Order("name").Preload("Teams", nil)
 
 	if name != "" {
 		query = query.Where("name LIKE ?", "%"+name+"%")
 	}
-	
+
 	if err := query.Find(&disciplines).Error; err != nil {
 		return nil, err
 	}
@@ -40,8 +40,8 @@ func (d *DisciplineServices) GetAllDisciplines(name string) ([]schema.Discipline
 	return disciplinesDTO, nil
 }
 
-func (d *DisciplineServices) GetAllDisciplinesByID(c *gin.Context) (schema.Discipline, error) {
-	var id = c.Param("id")
+func (d *DisciplineServices) GetAllDisciplinesByID(ctx *gin.Context) (schema.Discipline, error) {
+	var id = ctx.Param("id")
 	disciplineID, err := strconv.Atoi(id)
 	if err != nil {
 		return schema.Discipline{}, fmt.Errorf("ID invalido | %v", err)
@@ -56,7 +56,7 @@ func (d *DisciplineServices) GetAllDisciplinesByID(c *gin.Context) (schema.Disci
 
 func (d *DisciplineServices) CreateDiscipline(dis schema.Discipline) (schema.Discipline, error) {
 
-	if err := d.DB.Omit("Teams","Events","Athletes","Teachers").Create(&dis).Error; err != nil {
+	if err := d.DB.Omit("Teams", "Events", "Athletes", "Teachers").Create(&dis).Error; err != nil {
 		return dis, err
 	}
 	if len(dis.Athletes) > 0 {
@@ -69,38 +69,37 @@ func (d *DisciplineServices) CreateDiscipline(dis schema.Discipline) (schema.Dis
 
 	if len(dis.Events) > 0 {
 		d.DB.Model(&dis).Association("Events").Append(dis.Events)
-}
-	return dis,nil
+	}
+	return dis, nil
 }
 
 func (d *DisciplineServices) EditDiscipline(dis schema.Discipline, ctx *gin.Context) (schema.Discipline, error) {
-	
+
 	var id = ctx.Param("id")
 	disciplineID, err := strconv.Atoi(id)
 	if err != nil {
 		return schema.Discipline{}, fmt.Errorf("ID invalido | %w", err)
 	}
 	var discipline schema.Discipline
-	 if err := d.DB.First(&discipline, disciplineID).Error; err != nil {
-        return schema.Discipline{}, fmt.Errorf("disciplina no encontrada: %w", err)
-    }
-	 d.DB.Model(&discipline).Select("Name").Updates(&dis)
+	if err := d.DB.First(&discipline, disciplineID).Error; err != nil {
+		return schema.Discipline{}, fmt.Errorf("disciplina no encontrada: %w", err)
+	}
+	d.DB.Model(&discipline).Select("Name").Updates(&dis)
 
-
-	 if len(dis.Teams) > 0 {
-        d.DB.Model(&discipline).Association("Teams").Replace(dis.Teams)
-    }
+	if len(dis.Teams) > 0 {
+		d.DB.Model(&discipline).Association("Teams").Replace(dis.Teams)
+	}
 
 	if len(dis.Athletes) > 0 {
-        d.DB.Model(&discipline).Association("Athletes").Replace(dis.Athletes)
-    }
+		d.DB.Model(&discipline).Association("Athletes").Replace(dis.Athletes)
+	}
 	if len(dis.Events) > 0 {
-       d.DB.Model(&discipline).Association("Events").Replace(dis.Events)
-    }
+		d.DB.Model(&discipline).Association("Events").Replace(dis.Events)
+	}
 
 	if len(dis.Teachers) > 0 {
-       d.DB.Model(&discipline).Association("Teachers").Replace(dis.Teachers)
-    }
+		d.DB.Model(&discipline).Association("Teachers").Replace(dis.Teachers)
+	}
 
 	return discipline, d.DB.Preload("Teams").Preload("Athletes").Preload("Events").Preload("Teachers").First(&discipline, disciplineID).Error
 }
