@@ -22,23 +22,23 @@ func NewTourneyServices() *TourneyServices {
 func (s *TourneyServices) GetAllTourney(name, status string) ([]schema.TourneyGetBareDTO, error) {
 	var tourneys []schema.Tourney
 	query := s.DB.Preload("Events")
-   
-    if name != "" {
-        query = query.Where("name LIKE ?", "%"+name+"%")
-    } 
-	if status != "" {
-        query = query.Where("status LIKE ?", "%"+status+"%")
-    } 
 
-    if err := query.Find(&tourneys).Error; err != nil {
-        return nil, err
-    }
+	if name != "" {
+		query = query.Where("name LIKE ?", "%"+name+"%")
+	}
+	if status != "" {
+		query = query.Where("status LIKE ?", "%"+status+"%")
+	}
+
+	if err := query.Find(&tourneys).Error; err != nil {
+		return nil, err
+	}
 	var dtos []schema.TourneyGetBareDTO
 
 	for _, t := range tourneys {
 		dto := schema.TourneyGetBareDTO{
-			ID:   schema.RegularIDs(t.ID),
-			Name: t.Name,
+			ID:     schema.RegularIDs(t.ID),
+			Name:   t.Name,
 			Status: t.Status,
 		}
 		dtos = append(dtos, dto)
@@ -46,8 +46,8 @@ func (s *TourneyServices) GetAllTourney(name, status string) ([]schema.TourneyGe
 	return dtos, nil
 }
 
-func (s *TourneyServices) GetTourneyByID(c *gin.Context) (schema.TourneyGetFullDTO, error) {
-	var id = c.Param("id")
+func (s *TourneyServices) GetTourneyByID(ctx *gin.Context) (schema.TourneyGetFullDTO, error) {
+	var id = ctx.Param("id")
 	var tourney schema.Tourney
 	tourneyID, err := strconv.Atoi(id)
 	if err != nil {
@@ -55,11 +55,11 @@ func (s *TourneyServices) GetTourneyByID(c *gin.Context) (schema.TourneyGetFullD
 
 	}
 	result := s.DB.Preload("Events").Preload("Events.HomeTeam.University").
-    Preload("Events.HomeTeam.Athletes").          
-    Preload("Events.OppositeTeam.University").
-    Preload("Events.OppositeTeam.Athletes").      
-    Preload("Events.ResponsableTeacher.Disciplines"). 
-    Preload("Events.Discipline").First(&tourney, tourneyID).Error
+		Preload("Events.HomeTeam.Athletes").
+		Preload("Events.OppositeTeam.University").
+		Preload("Events.OppositeTeam.Athletes").
+		Preload("Events.ResponsableTeacher.Disciplines").
+		Preload("Events.Discipline").First(&tourney, tourneyID).Error
 	if result != nil {
 		return schema.TourneyGetFullDTO{}, result
 	}
@@ -85,17 +85,17 @@ func (s *TourneyServices) CreateTourney(t schema.Tourney) (schema.TourneyGetFull
 		Events: helpers.MapEventsBare(t.Events),
 	}, nil
 }
-func (s *TourneyServices) UpdateTourney(t schema.Tourney, c *gin.Context) (schema.TourneyGetFullDTO, error) {
-	var id = c.Param("id")
+func (s *TourneyServices) UpdateTourney(t schema.Tourney, ctx *gin.Context) (schema.TourneyGetFullDTO, error) {
+	var id = ctx.Param("id")
 	tourneyID, err := strconv.Atoi(id)
 
 	if err != nil {
 		return schema.TourneyGetFullDTO{}, fmt.Errorf("invalid team ID: %w", err)
 	}
 
-result := s.DB.Model(&schema.Tourney{}).Where("id = ?", tourneyID).Updates(&t)
+	result := s.DB.Model(&schema.Tourney{}).Where("id = ?", tourneyID).Updates(&t)
 
-	if result.Error != nil || result.RowsAffected == 0{
+	if result.Error != nil || result.RowsAffected == 0 {
 		return schema.TourneyGetFullDTO{}, fmt.Errorf("tourney not found or update failed: %w", result.Error)
 	}
 
@@ -103,17 +103,17 @@ result := s.DB.Model(&schema.Tourney{}).Where("id = ?", tourneyID).Updates(&t)
 	if err := s.DB.Preload("Events").First(&updateTourney, tourneyID).Error; err != nil {
 		return schema.TourneyGetFullDTO{}, err
 	}
-		dto := schema.TourneyGetFullDTO{
-			ID: schema.RegularIDs(updateTourney.ID),
-			Name: updateTourney.Name,
-			Events: helpers.MapEventsBare(updateTourney.Events),
-		}
-	return dto, nil	
-	
+	dto := schema.TourneyGetFullDTO{
+		ID:     schema.RegularIDs(updateTourney.ID),
+		Name:   updateTourney.Name,
+		Events: helpers.MapEventsBare(updateTourney.Events),
+	}
+	return dto, nil
+
 }
 
-func (s *TourneyServices) DeleteTourney(c *gin.Context) error {
-	var id = c.Param("id")
+func (s *TourneyServices) DeleteTourney(ctx *gin.Context) error {
+	var id = ctx.Param("id")
 	tourneyID, err := strconv.Atoi(id)
 	if err != nil {
 		return fmt.Errorf("Invalid ID")
