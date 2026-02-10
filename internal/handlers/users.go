@@ -22,7 +22,7 @@ func (u *UserHandler) LoginUserHandler(ctx *gin.Context) {
 	err := ctx.BindJSON(loginData)
 	token, err := u.service.LoginUser(loginData.Username, loginData.Password)
 	if err != nil {
-		helpers.SendError(ctx, http.StatusInternalServerError, "ERROR IN HANDLER\n Error logging in")
+		helpers.SendError(ctx, http.StatusInternalServerError, "ERROR IN HANDLER", "Error logging in")
 		return
 	}
 	helpers.SendSucces(ctx, "Successfully logged in", token)
