@@ -61,7 +61,7 @@ func (h *MajorHandler) EditMajorHandler(ctx *gin.Context) {
 		return
 	}
 
-	updatedMajor, err := h.service.CreateMajor(newMajor)
+	updatedMajor, err := h.service.EditMajor(newMajor,ctx)
 	if err != nil {
 		helpers.SendError(ctx, http.StatusInternalServerError, "Error interno del servidor", "Datos incorrectos ingresados en la edicion de la carrera universitaria.")
 		return

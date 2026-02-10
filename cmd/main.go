@@ -69,4 +69,5 @@ func main() {
 	routes.RegisterUserRoutes(r.Group("/users"), userHandlers)
 	log.Println(" Server corriendo en http://localhost:8080")
 	r.Run(":8080")
+	println("Exitted")
 }

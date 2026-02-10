@@ -67,59 +67,50 @@ func (s *TeamServices) GetAllTeamByID(ctx *gin.Context) (schema.TeamGetBareDTO, 
 	}, nil
 }
 
-func (s *TeamServices) CreateTeam(t schema.TeamPostDTO) (schema.TeamGetBareDTO, error) {
-	// 1. Validar referencias FK
-	var discipline schema.Discipline
-	if err := s.DB.First(&discipline, uint(t.DisciplineID)).Error; err != nil {
-		return schema.TeamGetBareDTO{}, fmt.Errorf("discipline %d not found: %w", t.DisciplineID, err)
-	}
+func (s *TeamServices) CreateTeam(t schema.Team) (schema.Team, error) {
+err := s.DB.Transaction(func(tx *gorm.DB) error {
 
-	var university schema.University
-	if err := s.DB.First(&university, uint(t.UniversityID)).Error; err != nil {
-		return schema.TeamGetBareDTO{}, fmt.Errorf("university %d not found: %w", t.UniversityID, err)
-	}
-
-	team := schema.Team{
-		Name:         t.Name,
-		Regular:      t.Regular,
-		Category:     schema.Gender(t.Category),
-		DisciplineID: t.DisciplineID,
-		UniversityID: t.UniversityID,
-	}
-
-	if err := s.DB.Create(&team).Error; err != nil {
-		return schema.TeamGetBareDTO{}, fmt.Errorf("creating team: %w", err)
-	}
-
-	// 4. Asignar atletas (many2many)
-	for _, athleteID := range t.AthleteIDs {
-		var athlete schema.Athlete
-        if err := s.DB.First(&athlete, uint(athleteID)).Error; err != nil {
-            return schema.TeamGetBareDTO{}, fmt.Errorf("athlete %d not found: %w", athleteID, err)
+		if err := tx.Omit("Discipline", "University").Create(&t).Error; err != nil {
+            return err
         }
-    }
+		return tx.Preload("Athletes").Preload("Discipline").Preload("University").First(&t, t.ID).Error
+	})
 
-	//  Retornar DTO completo con relaciones
-	var fullTeam schema.Team
-	if err := s.DB.Preload("University").Preload("Athletes").First(&fullTeam, team.ID).Error; err != nil {
-		return schema.TeamGetBareDTO{}, fmt.Errorf("loading created team: %w", err)
+	if err != nil {
+		return schema.Team{}, err
 	}
-
-	dto := schema.TeamGetBareDTO{
-		ID:       schema.RegularIDs(fullTeam.ID),
-		Name:     fullTeam.Name,
-		Regular:  fullTeam.Regular,
-		Category: string(fullTeam.Category),
-		University: schema.UniversityGetBareDTO{
-			ID:   schema.RegularIDs(fullTeam.University.ID),
-			Name: fullTeam.University.Name,
-		},
-		Athletes: helpers.MapAthletes(fullTeam.Athletes),
-	}
-
-	return dto, nil
+	return t, nil
 }
-//func (s *TeamServices) EditTeam(t schema.TeamUpdateDTO, ctx *gin.Context) (schema.TeamGetBareDTO, error)
+
+func (s *TeamServices) EditTeam(t schema.Team, ctx *gin.Context) (schema.Team, error){
+id := ctx.Param("id")
+    var team schema.Team
+
+    err := s.DB.Transaction(func(tx *gorm.DB) error {
+       
+        if err := tx.First(&team, id).Error; err != nil {
+            return fmt.Errorf("equipo no encontrado: %w", err)
+        }
+
+        if err := tx.Model(&team).Omit("Athletes", "Discipline", "University").Updates(&t).Error; err != nil {
+            return err
+        }
+
+        if t.Athletes != nil {
+          
+            if err := tx.Model(&team).Association("Athletes").Replace(t.Athletes); err != nil {
+                return err
+            }
+        }
+
+        return tx.Preload("Athletes").
+                  Preload("Discipline").
+                  Preload("University").
+                  First(&team, id).Error
+    })
+
+    return team, err
+}
 
 func (s *TeamServices) DeleteTeam(ctx *gin.Context) error {
 	id := ctx.Param("id")

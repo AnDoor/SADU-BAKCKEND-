@@ -61,7 +61,7 @@ func (h *TourneyHandler) UpdateTourneyHandler(ctx *gin.Context) {
 
 	var t schema.Tourney
 	if err := ctx.ShouldBindJSON(&t); err != nil {
-	helpers.SendError(ctx, http.StatusInternalServerError, "Error interno del servidor", "El torneo no fue encontrado en la base de datos.")
+	helpers.SendError(ctx, http.StatusNotFound, "Error interno del servidor", "El torneo no fue encontrado en la base de datos.")
 		return
 	}
 
