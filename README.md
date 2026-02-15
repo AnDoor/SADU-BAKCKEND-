@@ -4,7 +4,7 @@
  API REST escalable con Gin + GORM + SQLite3.
 
 **Características**
-```http
+```text
  - CRUD completo: Eventos, Torneos, Atletas...
 
  - Hot-reload: Cambios Go en tiempo real con Air
@@ -16,21 +16,24 @@
  - Backend: Go >1.23 + Gin Framework + GORM
 
    ```
-   **Estructura del proyecto**
+   **📁 Estructura del proyecto**
 
-```http
+```text
 ├─SERVICIO-SADU-BACK/
+├── ./cmd/                # main.go
 ├── ./config/             # configuracion de BD y variables de entorno
+├── ./helpers/            # Funciones reutilizables (utils)
 ├── ./internal/
 ├─────./internal/handlers # Controladores hechos con GIN
-├─────./internal/routes   # Rutas y endpoint
-├─────./internal/services # Logica de negocio y metodos HTTP
+├─────./internal/middlewares 
+├─────./routes            # Rutas y endpoint
+├─────./services          # Logica de negocio y metodos HTTP
 ├── ./schemas/            # Schemas GORM
 ├── ./seed/               # Pruebas con datos falsos
-├── ./src/                # main.go
-├── ./tmp/            # Build temporal (.gitignore)
-├── .air.toml       # Multiplataforma
-└── Makefile        # Comandos
+├── ./tmp/                # Build temporal (.gitignore)
+├── .air.toml             # Multiplataforma
+├── .air.linux.toml       # Multiplataforma
+└── Makefile              # Comandos
   ```
 ## Run Locally
 
