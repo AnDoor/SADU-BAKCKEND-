@@ -8,11 +8,11 @@ import (
 
 type User struct {
 	gorm.Model
-	Username         string
-	DisplayName      string
-	Email            string
-	Password         string
-	Description      string
+	Username    string
+	DisplayName string
+	Email       string
+	Password    string
+	Description string
 }
 
 // Status represents the possible states of an item

@@ -24,6 +24,7 @@ func ConnectDB() {
 
 func SyncDB() error {
 	models := []any{
+		&schema.User{},
 		&schema.University{},
 		&schema.Athlete{},
 		&schema.Major{},
