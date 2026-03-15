@@ -31,7 +31,7 @@ func seedDatabase(db *gorm.DB) error {
 	log.Println("Seeding database...")
 	faker := gofakeit.New(777)
 
-	pass, err := bcrypt.GenerateFromPassword([]byte("12345678"), bcrypt.DefaultCost)
+	pass, err := bcrypt.GenerateFromPassword([]byte("Az12345678Az."), bcrypt.DefaultCost)
 	if err != nil {
 		return err
 	}
