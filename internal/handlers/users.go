@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -18,11 +19,16 @@ func NewUserHandler(service *services.UserService) *UserHandler {
 }
 
 func (u *UserHandler) LoginUserHandler(ctx *gin.Context) {
-	var loginData = schema.LoginDTO{}
-	err := ctx.BindJSON(loginData)
+	var loginData schema.LoginDTO
+	if err := ctx.ShouldBindJSON(&loginData); err != nil {
+		log.Printf("Error binding JSON: %v\n", err)
+		helpers.SendError(ctx, http.StatusBadRequest, "INVALID_INPUT", "Invalid login data")
+		return
+	}
+
 	token, err := u.service.LoginUser(loginData.Username, loginData.Password)
 	if err != nil {
-		helpers.SendError(ctx, http.StatusInternalServerError, "ERROR IN HANDLER", "Error logging in")
+		helpers.SendError(ctx, http.StatusUnauthorized, "AUTH_FAILED", "Invalid credentials")
 		return
 	}
 	helpers.SendSucces(ctx, "Successfully logged in", token)
