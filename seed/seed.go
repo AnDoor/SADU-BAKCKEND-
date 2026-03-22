@@ -121,6 +121,7 @@ func seedDatabase(db *gorm.DB) error {
 			Regular:         faker.Bool(),
 			GovID:           GovId,
 			MajorID:         schema.RegularIDs(carreras[majorIndex].ID),
+		
 		})
 	}
 	if err := db.Create(&atletas).Error; err != nil {

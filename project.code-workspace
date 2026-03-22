@@ -1,0 +1,39 @@
+{
+    "folders": [
+        {
+            "name": "Backend: Core",
+            "path": "internal",
+           
+        },
+        {
+            "name": "Backend: Config",
+            "path": "config",
+           
+        },
+        
+        {
+            "name": "Backend: Utils",
+            "path": "helpers",
+        },
+        {
+            "name": "root",
+            "path": ".",
+        }
+        
+
+    ],
+    "settings": {
+        "files.exclude": {
+            "**/.git": true,
+            "**/.svn": true,
+            "**/.hg": true,
+            "**/.DS_Store": true,
+            "**/Thumbs.db": true,
+            "config":true,
+            "internal":true,
+            "helpers":true,
+            "schema":true,
+            ".gitignore":true,
+        },
+}
+}

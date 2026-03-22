@@ -16,10 +16,21 @@ func NewEventService() *EventService {
 	return &EventService{DB: config.DB}
 }
 
-func (s *EventService) GetAllEvents(name, status string) ([]schema.EventGetBareDTO, error) {
-	query := s.DB.Preload("Athletes")
+func (s *EventService) GetEvents(id uint, name, status string) ([]schema.EventGetDTO, error) {
+
 	var event []schema.Event
 
+	query := s.DB.Preload("HomeTeam").
+		Preload("HomeTeam.University").
+		Preload("OppositeTeam.University").
+		Preload("Tourney").
+		Preload("ResponsableTeacher.Disciplines").
+		Preload("ResponsableTeacher").
+		Preload("Discipline")
+
+	if id != 0 {
+		query = query.Where("events.id = ?", id)
+	}
 	if name != " " {
 		query = query.Where("name LIKE ?", "%"+name+"%")
 	}
@@ -29,41 +40,6 @@ func (s *EventService) GetAllEvents(name, status string) ([]schema.EventGetBareD
 	}
 	if err := query.Find(&event).Error; err != nil {
 		return nil, nil
-	}
-	eventDTO := []schema.EventGetBareDTO{}
-	for _, value := range event {
-		eventDTO = append(eventDTO, schema.EventGetBareDTO{
-			ID:             schema.RegularIDs(value.ID),
-			Name:           value.Name,
-			Date:           value.Date,
-			Status:         value.Status,
-			HomePoints:     value.HomePoints,
-			OppositePoints: value.OppositePoints,
-			// ResponsableTeacher: value.ResponsableTeacher,
-			// Discipline: value.Discipline,
-		})
-
-	}
-
-	return eventDTO, nil
-}
-func (s *EventService) GetEventByID(ctx *gin.Context) ([]schema.EventGetDTO, error) {
-	id := ctx.Param("id")
-
-	var event []schema.Event
-
-	err := s.DB.Preload("HomeTeam.University").
-		Preload("HomeTeam.Athletes").
-		Preload("OppositeTeam.University").
-		Preload("OppositeTeam.Athletes").
-		Preload("Tourney").
-		Preload("ResponsableTeacher").
-		Preload("ResponsableTeacher.Disciplines").
-		Preload("Discipline").
-		First(&event, id).Error
-
-	if err != nil {
-		return []schema.EventGetDTO{}, err
 	}
 
 	dto := helpers.MapEventsGetDTO(event)

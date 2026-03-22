@@ -1,5 +1,5 @@
 run:
-	go run .
+	go run ./cmd/main.go
 
 mseed:
 	go run ./seed/

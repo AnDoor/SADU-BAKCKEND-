@@ -6,8 +6,8 @@ import (
 )
 
 func RegisterEventsRouters(r *gin.RouterGroup, handler *handlers.EventHandler){
-	r.GET("", handler.GetAllEventsHandler)
-	r.GET("/:id", handler.GetEventByIDHandler)
+	r.GET("", handler.GetEventsHandler)
+	r.GET("/:id", handler.GetEventsHandler)
 	r.POST("/create", handler.CreateEventHandler)
 	r.PUT("/edit/:id", handler.EditEventHandler)
 	r.DELETE("/delete/:id", handler.DeleteEventHandler)

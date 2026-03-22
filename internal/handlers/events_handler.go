@@ -1,6 +1,8 @@
 package handlers
+
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"uneg.edu.ve/servicio-sadu-back/helpers"
@@ -16,29 +18,26 @@ func NewEventHandler(service *services.EventService) *EventHandler {
 	return &EventHandler{service: service}
 }
 
-func (h *EventHandler) GetAllEventsHandler(ctx *gin.Context) {
+func (h *EventHandler) GetEventsHandler(ctx *gin.Context) {
+	idParam := ctx.Param("id")
+	var id uint
+	if idParam != "" {
+		val, _ := strconv.Atoi(idParam)
+		id = uint(val)
+	}
+
 	name := ctx.Query("name")
 	status := ctx.Query("status")
 
-	events, err := h.service.GetAllEvents(name, status)
+	events, err := h.service.GetEvents(id,name, status)
 
 	if err != nil {
-	helpers.SendError(ctx, http.StatusInternalServerError, "Error interno del servidor", "Ocurrió un problema inesperado al procesar la lista de Eventos.")
-	return
-}
+		helpers.SendError(ctx, http.StatusInternalServerError, "Error interno del servidor", "Ocurrió un problema inesperado al procesar la lista de Eventos.")
+		return
+	}
 
 	helpers.SendSucces(ctx, "LISTIN-EVENTS-SUCCESFULLY", events)
 }
-
-func (h *EventHandler) GetEventByIDHandler(ctx *gin.Context) {
-	events, err := h.service.GetEventByID(ctx)
-	if err != nil {
-		helpers.SendError(ctx, http.StatusNotFound, "Error de busqueda en la base de datos", "El ID del evento es incorrecto, no se encontro Evento.")
-		return
-	}
-	helpers.SendSucces(ctx, "LISTIN-EVENTS-BY-ID-SUCCESFULLY", events)
-}
-
 
 func (h *EventHandler) CreateEventHandler(ctx *gin.Context) {
 

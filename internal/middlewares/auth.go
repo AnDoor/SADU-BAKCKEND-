@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"strconv"
@@ -35,6 +36,10 @@ func AuthMiddleware() gin.HandlerFunc {
 			tokenString = parts[1]
 		}
 
+		fmt.Println("-----------------------------------------")
+		fmt.Println("TOKEN RECIBIDO (STRING):", tokenString)
+		fmt.Println("-----------------------------------------")
+
 		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 			return jwtKey, nil
 		})
@@ -46,6 +51,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+			fmt.Printf("CLAIMS EXTRAÍDOS: ID=%v, User=%v\n", claims["user_id"], claims["username"])
 			userID := uint(claims["user_id"].(float64))
 			username := claims["username"].(string)
 			c.Set("userId", userID)

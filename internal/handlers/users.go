@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -25,5 +26,9 @@ func (u *UserHandler) LoginUserHandler(ctx *gin.Context) {
 		helpers.SendError(ctx, http.StatusInternalServerError, "ERROR IN HANDLER", "Error logging in")
 		return
 	}
+	fmt.Println("------------------------------------------")
+	fmt.Println("🔑 TOKEN PARA POSTMAN:")
+	fmt.Println(token)
+	fmt.Println("------------------------------------------")
 	helpers.SendSucces(ctx, "Successfully logged in", token)
 }

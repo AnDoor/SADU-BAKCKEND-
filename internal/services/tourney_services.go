@@ -68,7 +68,7 @@ func (s *TourneyServices) GetTourneyByID(ctx *gin.Context) (schema.TourneyGetFul
 		ID:     schema.RegularIDs(tourneyID),
 		Name:   tourney.Name,
 		Status: tourney.Status,
-		Events: helpers.MapEventsBare(tourney.Events),
+		Events: helpers.MapEventsGetDTO(tourney.Events),
 	}, nil
 }
 

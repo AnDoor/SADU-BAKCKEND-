@@ -27,6 +27,7 @@ type AthleteDTO struct {
 	Gender      Gender     `json:"Gender"`
 	Enrolled    bool       `json:"Enrolled"`
 	Regular     bool       `json:"Regular"`
+	DisciplineID RegularIDs `json:"DisciplineID"`
 }
 
 type MajorGetDTO struct {
@@ -118,20 +119,7 @@ type TourneyGetFullDTO struct {
 	ID     RegularIDs        `json:"ID"`
 	Name   string            `json:"Name"`
 	Status Status            `json:"Status"`
-	Events []EventGetBareDTO `json:"Events"`
-}
-
-type EventGetBareDTO struct {
-	ID                 RegularIDs           `json:"ID"`
-	Name               string               `json:"Name"`
-	Date               time.Time            `json:"Date"`
-	Status             string               `json:"Status"`
-	HomePoints         uint8                `json:"HomePoints"`
-	OppositePoints     uint8                `json:"OppositePoints"`
-	HomeTeam           TeamGetBareDTO       `json:"HomeTeam"`
-	OppositeTeam       TeamGetBareDTO       `json:"OppositeTeam"`
-	ResponsableTeacher TeacherGetBareDTO    `json:"ResponsableTeacher"`
-	Discipline         DisciplineGetBareDTO `json:"Discipline"`
+	Events []EventGetDTO `json:"Events"`
 }
 
 type EventGetDTO struct {
