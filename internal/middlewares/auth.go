@@ -19,10 +19,11 @@ var ignoreRoutesOfVerification = []string{
 
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if jwtKey == nil {
-			c.Next()
-			return
-			// jwtKey = []byte("tu_clave_secreta")
+		if len(jwtKey) == 0 {
+			jwtKey = []byte(os.Getenv("SECRET_KEY"))
+			if len(jwtKey) == 0 {
+				jwtKey = []byte("tu_clave_secreta")
+			}
 		}
 		tokenString := c.GetHeader("Authorization")
 		if tokenString == "" {

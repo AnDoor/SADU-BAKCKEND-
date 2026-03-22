@@ -36,8 +36,11 @@ func (s *UserService) LoginUser(username, password string) (string, error) {
 		return "", errors.New("invalid credentials")
 	}
 
-	if jwtKey == nil {
-		jwtKey = []byte("tu_clave_secreta")
+	if len(jwtKey) == 0 {
+		jwtKey = []byte(os.Getenv("SECRET_KEY"))
+		if len(jwtKey) == 0 {
+			jwtKey = []byte("tu_clave_secreta")
+		}
 	}
 
 	expirationTime := time.Now().Add(24 * time.Hour) // 24h

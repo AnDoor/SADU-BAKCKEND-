@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/brianvoe/gofakeit/v7"
+	"golang.org/x/crypto/bcrypt"
 	"uneg.edu.ve/servicio-sadu-back/config"
 	"uneg.edu.ve/servicio-sadu-back/schema"
 	. "uneg.edu.ve/servicio-sadu-back/schema"
@@ -29,6 +30,19 @@ func main() {
 func seedDatabase(db *gorm.DB) error {
 	log.Println("Seeding database...")
 	faker := gofakeit.New(777)
+
+	pass, err := bcrypt.GenerateFromPassword([]byte("Az12345678Az."), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+	// Seed User
+	users := []User{
+		{Username: "admin@gmail.com", Password: string(pass)},
+	}
+	if err := db.Create(&users).Error; err != nil {
+		return err
+	}
+	log.Println("Users seeded successfully")
 
 	// Seed Majors
 	carreras := []Major{
