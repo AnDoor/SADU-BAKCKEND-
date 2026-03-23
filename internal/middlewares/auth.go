@@ -37,10 +37,6 @@ func AuthMiddleware() gin.HandlerFunc {
 			tokenString = parts[1]
 		}
 
-		fmt.Println("-----------------------------------------")
-		fmt.Println("TOKEN RECIBIDO (STRING):", tokenString)
-		fmt.Println("-----------------------------------------")
-
 		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 			return jwtKey, nil
 		})

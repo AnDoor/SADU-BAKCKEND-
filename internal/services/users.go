@@ -2,7 +2,6 @@ package services
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"time"
 
@@ -57,13 +56,6 @@ func (s *UserService) LoginUser(username, password string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-
-
-	fmt.Println("=============================================")
-	fmt.Println(" TOKEN GENERADO PARA EL USUARIO:", username)
-	fmt.Println(tokenString)
-	fmt.Println("=============================================")
-
 
 	return tokenString, nil
 }

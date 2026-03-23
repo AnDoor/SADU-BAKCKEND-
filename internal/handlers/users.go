@@ -1,11 +1,7 @@
 package handlers
 
 import (
-<<<<<<< HEAD
-	"fmt"
-=======
 	"log"
->>>>>>> 8eb16fdf2d4640cf06d3802b5c9262f491fdf7f7
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -35,9 +31,6 @@ func (u *UserHandler) LoginUserHandler(ctx *gin.Context) {
 		helpers.SendError(ctx, http.StatusUnauthorized, "AUTH_FAILED", "Invalid credentials")
 		return
 	}
-	fmt.Println("------------------------------------------")
-	fmt.Println("🔑 TOKEN PARA POSTMAN:")
-	fmt.Println(token)
-	fmt.Println("------------------------------------------")
+
 	helpers.SendSucces(ctx, "Successfully logged in", token)
 }
