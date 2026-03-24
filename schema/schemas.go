@@ -98,6 +98,8 @@ type Tourney struct {
 	Name   string
 	Status Status  `gorm:"index;type:status"`
 	Events []Event `gorm:"foreignKey:TourneyID"`
+	StartDate time.Time
+	EndDate time.Time
 }
 
 type Event struct {

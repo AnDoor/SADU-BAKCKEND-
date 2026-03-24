@@ -34,12 +34,16 @@ func (s *TourneyServices) GetAllTourney(name, status string) ([]schema.TourneyGe
 		return nil, err
 	}
 	var dtos []schema.TourneyGetBareDTO
-
+	
 	for _, t := range tourneys {
+		
 		dto := schema.TourneyGetBareDTO{
 			ID:     schema.RegularIDs(t.ID),
 			Name:   t.Name,
 			Status: t.Status,
+			StartDate: t.StartDate,
+			EndDate: t.EndDate,
+			TotalEvents: uint(len(t.Events)) ,
 		}
 		dtos = append(dtos, dto)
 	}
@@ -69,6 +73,8 @@ func (s *TourneyServices) GetTourneyByID(ctx *gin.Context) (schema.TourneyGetFul
 		Name:   tourney.Name,
 		Status: tourney.Status,
 		Events: helpers.MapEventsGetDTO(tourney.Events),
+		StartDate: tourney.StartDate,
+		EndDate: tourney.EndDate,
 	}, nil
 }
 

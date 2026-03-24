@@ -18,15 +18,15 @@ type Claims struct {
 }
 
 type AthleteDTO struct {
-	ID          RegularIDs `json:"ID"`
-	GovID       string     `json:"GovID"`
-	FirstNames  string     `json:"FirstNames"`
-	LastNames   string     `json:"LastNames"`
-	PhoneNumber string     `json:"PhoneNumber"`
-	Email       string     `json:"Email"`
-	Gender      Gender     `json:"Gender"`
-	Enrolled    bool       `json:"Enrolled"`
-	Regular     bool       `json:"Regular"`
+	ID           RegularIDs `json:"ID"`
+	GovID        string     `json:"GovID"`
+	FirstNames   string     `json:"FirstNames"`
+	LastNames    string     `json:"LastNames"`
+	PhoneNumber  string     `json:"PhoneNumber"`
+	Email        string     `json:"Email"`
+	Gender       Gender     `json:"Gender"`
+	Enrolled     bool       `json:"Enrolled"`
+	Regular      bool       `json:"Regular"`
 	DisciplineID RegularIDs `json:"DisciplineID"`
 }
 
@@ -110,16 +110,21 @@ type TeacherCreateDTO struct {
 }
 
 type TourneyGetBareDTO struct {
-	ID     RegularIDs `json:"ID"`
-	Name   string     `json:"Name"`
-	Status Status     `json:"Status"`
+	ID          RegularIDs `json:"ID"`
+	Name        string     `json:"Name"`
+	Status      Status     `json:"Status"`
+	StartDate   time.Time
+	EndDate     time.Time
+	TotalEvents uint
 }
 
 type TourneyGetFullDTO struct {
-	ID     RegularIDs        `json:"ID"`
-	Name   string            `json:"Name"`
-	Status Status            `json:"Status"`
-	Events []EventGetDTO `json:"Events"`
+	ID        RegularIDs    `json:"ID"`
+	Name      string        `json:"Name"`
+	Status    Status        `json:"Status"`
+	Events    []EventGetDTO `json:"Events"`
+	StartDate time.Time
+	EndDate   time.Time
 }
 
 type EventGetDTO struct {

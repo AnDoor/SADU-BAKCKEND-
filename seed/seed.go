@@ -163,11 +163,11 @@ func seedDatabase(db *gorm.DB) error {
 
 	// Seed Tourneys
 	torneos := []Tourney{
-		{Name: "Juegos Interuniversitarios Nacional", Status: StatusOFF},
-		{Name: "Copa Universitaria Regional", Status: StatusON},
-		{Name: "Torneo de Verano", Status: StatusWait},
-		{Name: "Campeonato Nacional Universitario", Status: StatusOFF},
-		{Name: "Liga Universitaria", Status: StatusON},
+		{Name: "Juegos Interuniversitarios Nacional", Status: StatusOFF, StartDate:  faker.DateRange(time.Now().AddDate(-1, 0, 0), time.Now().AddDate(1, 0, 0)), EndDate:   faker.DateRange(time.Now().AddDate(-1, 0, 0), time.Now().AddDate(1, 0, 0))},
+		{Name: "Copa Universitaria Regional", Status: StatusON, StartDate:  faker.DateRange(time.Now().AddDate(-1, 0, 0), time.Now().AddDate(1, 0, 0)), EndDate:   faker.DateRange(time.Now().AddDate(-1, 0, 0), time.Now().AddDate(1, 0, 0))},
+		{Name: "Torneo de Verano", Status: StatusWait,StartDate:  faker.DateRange(time.Now().AddDate(-1, 0, 0), time.Now().AddDate(1, 0, 0)), EndDate:   faker.DateRange(time.Now().AddDate(-1, 0, 0), time.Now().AddDate(1, 0, 0))},
+		{Name: "Campeonato Nacional Universitario", Status: StatusOFF,StartDate:  faker.DateRange(time.Now().AddDate(-1, 0, 0), time.Now().AddDate(1, 0, 0)), EndDate:   faker.DateRange(time.Now().AddDate(-1, 0, 0), time.Now().AddDate(1, 0, 0))},
+		{Name: "Liga Universitaria", Status: StatusON, StartDate:  faker.DateRange(time.Now().AddDate(-1, 0, 0), time.Now().AddDate(1, 0, 0)), EndDate:   faker.DateRange(time.Now().AddDate(-1, 0, 0), time.Now().AddDate(1, 0, 0))},
 	}
 	if err := db.Create(&torneos).Error; err != nil {
 		return err
