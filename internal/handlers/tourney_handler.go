@@ -42,12 +42,25 @@ func (h *TourneyHandler) GetTourneyByIdHandler(ctx *gin.Context) {
 }
 
 func (h *TourneyHandler) CreateUniversityHandler(ctx *gin.Context) {
-	var newTourney schema.Tourney
-	if err := ctx.ShouldBindJSON(&newTourney); err != nil {
-		helpers.SendError(ctx, http.StatusBadRequest, "JSON inválido: "+ err.Error(),"El torneo ya fue creado anteriormente o no fue encontrado.")
+	var dto schema.TourneyPOSTandPUTDTO
+
+	if err := ctx.ShouldBindJSON(&dto); err != nil {
+		helpers.SendError(ctx, http.StatusBadRequest, "JSON inválido: "+err.Error(), "El torneo ya fue creado anteriormente o no fue encontrado.")
 		return
 	}
+	newTourney := schema.Tourney{
+		Name:         dto.Name,
+		Status:       dto.Status,
+		StartDate:    dto.StartDate,
+		EndDate:      dto.EndDate,
+		DisciplineID: dto.DisciplineID,
+	}
 
+	for _, id := range dto.Events {
+		newTourney.Events = append(newTourney.Events, schema.Event{
+			Model: gorm.Model{ID: uint(id)},
+		})
+	}
 	createdTourney, err := h.service.CreateTourney(newTourney)
 	if err != nil {
 		helpers.SendError(ctx, http.StatusInternalServerError, "Error interno del servidor", "El inesperado a la hora de crear torneo.")
@@ -59,19 +72,34 @@ func (h *TourneyHandler) CreateUniversityHandler(ctx *gin.Context) {
 
 func (h *TourneyHandler) UpdateTourneyHandler(ctx *gin.Context) {
 
-	var t schema.Tourney
-	if err := ctx.ShouldBindJSON(&t); err != nil {
-	helpers.SendError(ctx, http.StatusNotFound, "Error interno del servidor", "El torneo no fue encontrado en la base de datos.")
+	var dto schema.TourneyPOSTandPUTDTO
+
+	if err := ctx.ShouldBindJSON(&dto); err != nil {
+		helpers.SendError(ctx, http.StatusNotFound, "Error interno del servidor", "El torneo no fue encontrado en la base de datos.")
 		return
 	}
+	tourneyUpdate := schema.Tourney{
+		Name:         dto.Name,
+		Status:       dto.Status,
+		StartDate:    dto.StartDate,
+		EndDate:      dto.EndDate,
+		DisciplineID: dto.DisciplineID,
+	}
 
-	dto, err := h.service.UpdateTourney(t, ctx)
+	if dto.Events != nil {
+		for _, id := range dto.Events {
+			tourneyUpdate.Events = append(tourneyUpdate.Events, schema.Event{
+				Model: gorm.Model{ID: uint(id)},
+			})
+		}
+	}
+	updatedTourney, err := h.service.UpdateTourney(tourneyUpdate, ctx)
 	if err != nil {
 		helpers.SendError(ctx, http.StatusInternalServerError, "Error interno del servidor", "El inesperado a la hora de editar torneo.")
 		return
-	
+
 	}
-	helpers.SendSucces(ctx, "EDITING-TOURNEY-SUCCESFULLY", dto)
+	helpers.SendSucces(ctx, "EDITING-TOURNEY-SUCCESFULLY", updatedTourney)
 
 }
 
@@ -80,8 +108,10 @@ func (h *TourneyHandler) DeleteTourneyHandler(ctx *gin.Context) {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			helpers.SendError(ctx, http.StatusNotFound, "Torneo no encontrada", "El ID del torneo esta mal escrito o es invalido para buscar el torneo en la base de datos")
 		} else {
-			helpers.SendError(ctx, http.StatusInternalServerError, err.Error(),"Error interno en el servidor: no se encuentra torneo para eliminar")
+			helpers.SendError(ctx, http.StatusInternalServerError, err.Error(), "Error interno en el servidor: no se encuentra torneo para eliminar")
 		}
+
+		
 		return
 	}
 

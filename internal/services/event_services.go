@@ -1,6 +1,8 @@
 package services
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"uneg.edu.ve/servicio-sadu-back/config"
@@ -48,8 +50,12 @@ func (s *EventService) GetEvents(id uint, name, status string) ([]schema.EventGe
 }
 
 func (s *EventService) CreateEvent(event schema.Event) (schema.Event, error) {
-
+	var tourney schema.Tourney
 	tx := s.DB.Begin()
+
+	if event.DisciplineID != tourney.DisciplineID {
+		return schema.Event{}, fmt.Errorf("la disciplina del evento no coincide con la del torneo")
+	}
 
 	if err := tx.Create(&event).Error; err != nil {
 		tx.Rollback()

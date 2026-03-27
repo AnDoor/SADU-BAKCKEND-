@@ -80,6 +80,7 @@ type Discipline struct {
 	Events   []Event   `gorm:"foreignKey:DisciplineID"`
 	Athletes []Athlete `gorm:"many2many:athlete_disciplines;"`
 	Teachers []Teacher `gorm:"many2many:teacher_disciplines;"`
+	Tourney  []Tourney `gorm:"many2many:tourney_disicplines;"`
 }
 
 type Teacher struct {
@@ -95,11 +96,13 @@ type Teacher struct {
 
 type Tourney struct {
 	gorm.Model
-	Name   string
-	Status Status  `gorm:"index;type:status"`
-	Events []Event `gorm:"foreignKey:TourneyID"`
-	StartDate time.Time
-	EndDate time.Time
+	Name         string
+	Status       Status  `gorm:"index;type:status"`
+	Events       []Event `gorm:"foreignKey:TourneyID"`
+	StartDate    time.Time
+	EndDate      time.Time
+	DisciplineID RegularIDs       `json:"DisciplineID"`
+	Discipline   Discipline `gorm:"foreignKey:DisciplineID"`
 }
 
 type Event struct {
@@ -113,9 +116,9 @@ type Event struct {
 	OppositePoints       uint8
 	HomeTeamID           RegularIDs
 	OppositeTeamID       RegularIDs
-	TourneyID            RegularIDs
+	TourneyID            RegularIDs `json:"TourneyID"`
 	ResponsableTeacherID RegularIDs
-	DisciplineID         RegularIDs
+	DisciplineID         RegularIDs `json:"DisciplineID"`
 	HomeTeam             Team       `gorm:"foreignKey:HomeTeamID"`
 	OppositeTeam         Team       `gorm:"foreignKey:OppositeTeamID"`
 	Tourney              Tourney    `gorm:"foreignKey:TourneyID"`

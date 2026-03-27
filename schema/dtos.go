@@ -110,12 +110,23 @@ type TeacherCreateDTO struct {
 }
 
 type TourneyGetBareDTO struct {
-	ID          RegularIDs `json:"ID"`
-	Name        string     `json:"Name"`
-	Status      Status     `json:"Status"`
-	StartDate   time.Time
-	EndDate     time.Time
-	TotalEvents uint
+	ID             RegularIDs `json:"ID"`
+	Name           string     `json:"Name"`
+	Status         Status     `json:"Status"`
+	StartDate      time.Time  `json:"StartDate"`
+	EndDate        time.Time  `json:"EndDate"`
+	TotalEvents    uint       `json:"TotalEvents"`
+	DisciplineID   RegularIDs `json:"DisciplineID"`
+	DisciplineName string     `json:"DisciplineName,omitempty"`
+}
+
+type TourneyPOSTandPUTDTO struct {
+	Name         string       `json:"Name"`
+	Status       Status       `json:"Status"`
+	Events       []RegularIDs `json:"EventsIDs"`
+	StartDate    time.Time    `json:"StartDate"`
+	EndDate      time.Time    `json:"EndDate"`
+	DisciplineID RegularIDs   `json:"DisciplineID"`
 }
 
 type TourneyGetFullDTO struct {

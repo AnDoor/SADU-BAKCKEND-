@@ -163,12 +163,42 @@ func seedDatabase(db *gorm.DB) error {
 
 	// Seed Tourneys
 	torneos := []Tourney{
-		{Name: "Juegos Interuniversitarios Nacional", Status: StatusOFF, StartDate:  faker.DateRange(time.Now().AddDate(-1, 0, 0), time.Now().AddDate(1, 0, 0)), EndDate:   faker.DateRange(time.Now().AddDate(-1, 0, 0), time.Now().AddDate(1, 0, 0))},
-		{Name: "Copa Universitaria Regional", Status: StatusON, StartDate:  faker.DateRange(time.Now().AddDate(-1, 0, 0), time.Now().AddDate(1, 0, 0)), EndDate:   faker.DateRange(time.Now().AddDate(-1, 0, 0), time.Now().AddDate(1, 0, 0))},
-		{Name: "Torneo de Verano", Status: StatusWait,StartDate:  faker.DateRange(time.Now().AddDate(-1, 0, 0), time.Now().AddDate(1, 0, 0)), EndDate:   faker.DateRange(time.Now().AddDate(-1, 0, 0), time.Now().AddDate(1, 0, 0))},
-		{Name: "Campeonato Nacional Universitario", Status: StatusOFF,StartDate:  faker.DateRange(time.Now().AddDate(-1, 0, 0), time.Now().AddDate(1, 0, 0)), EndDate:   faker.DateRange(time.Now().AddDate(-1, 0, 0), time.Now().AddDate(1, 0, 0))},
-		{Name: "Liga Universitaria", Status: StatusON, StartDate:  faker.DateRange(time.Now().AddDate(-1, 0, 0), time.Now().AddDate(1, 0, 0)), EndDate:   faker.DateRange(time.Now().AddDate(-1, 0, 0), time.Now().AddDate(1, 0, 0))},
-	}
+    {
+        Name:         "Juegos Interuniversitarios Nacional",
+        Status:       StatusOFF,
+        StartDate:    faker.DateRange(time.Now().AddDate(-1, 0, 0), time.Now().AddDate(1, 0, 0)),
+        EndDate:      faker.DateRange(time.Now().AddDate(-1, 0, 0), time.Now().AddDate(1, 0, 0)),
+        DisciplineID: 1, 
+    },
+    {
+        Name:         "Copa Universitaria Regional",
+        Status:       StatusON,
+        StartDate:    faker.DateRange(time.Now().AddDate(-1, 0, 0), time.Now().AddDate(1, 0, 0)),
+        EndDate:      faker.DateRange(time.Now().AddDate(-1, 0, 0), time.Now().AddDate(1, 0, 0)),
+        DisciplineID: 2, 
+    },
+    {
+        Name:         "Torneo de Verano",
+        Status:       StatusWait,
+        StartDate:    faker.DateRange(time.Now().AddDate(-1, 0, 0), time.Now().AddDate(1, 0, 0)),
+        EndDate:      faker.DateRange(time.Now().AddDate(-1, 0, 0), time.Now().AddDate(1, 0, 0)),
+        DisciplineID: 3, 
+    },
+    {
+        Name:         "Campeonato Nacional Universitario",
+        Status:       StatusOFF,
+        StartDate:    faker.DateRange(time.Now().AddDate(-1, 0, 0), time.Now().AddDate(1, 0, 0)),
+        EndDate:      faker.DateRange(time.Now().AddDate(-1, 0, 0), time.Now().AddDate(1, 0, 0)),
+        DisciplineID: 4, 
+    },
+    {
+        Name:         "Liga Universitaria",
+        Status:       StatusON,
+        StartDate:    faker.DateRange(time.Now().AddDate(-1, 0, 0), time.Now().AddDate(1, 0, 0)),
+        EndDate:      faker.DateRange(time.Now().AddDate(-1, 0, 0), time.Now().AddDate(1, 0, 0)),
+        DisciplineID: 5, 
+    },
+}
 	if err := db.Create(&torneos).Error; err != nil {
 		return err
 	}
