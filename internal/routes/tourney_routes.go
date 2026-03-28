@@ -8,7 +8,7 @@ import (
 func RegisterTourney(r *gin.RouterGroup, TourneyHandler *handlers.TourneyHandler){
 	r.GET("", TourneyHandler.GetAllTourneyHandler)
 	r.GET("/:id", TourneyHandler.GetTourneyByIdHandler)
-	r.POST("/create", TourneyHandler.CreateUniversityHandler)
+	r.POST("/create", TourneyHandler.CreateTourneyHandler)
 	r.PUT("/edit/:id", TourneyHandler.UpdateTourneyHandler)
 	r.DELETE("/delete/:id", TourneyHandler.DeleteTourneyHandler)
 

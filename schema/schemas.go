@@ -101,7 +101,7 @@ type Tourney struct {
 	Events       []Event `gorm:"foreignKey:TourneyID"`
 	StartDate    time.Time
 	EndDate      time.Time
-	DisciplineID RegularIDs       `json:"DisciplineID"`
+	DisciplineID RegularIDs `json:"DisciplineID"`
 	Discipline   Discipline `gorm:"foreignKey:DisciplineID"`
 }
 
@@ -112,8 +112,8 @@ type Event struct {
 	Status               string
 	Observation          string
 	Ubication            string
-	HomePoints           uint8
-	OppositePoints       uint8
+	HomePoints           uint8 `gorm:"column:home_points"`
+	OppositePoints       uint8 `gorm:"column:opposite_points"`
 	HomeTeamID           RegularIDs
 	OppositeTeamID       RegularIDs
 	TourneyID            RegularIDs `json:"TourneyID"`

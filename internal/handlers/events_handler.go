@@ -41,13 +41,13 @@ func (h *EventHandler) GetEventsHandler(ctx *gin.Context) {
 
 func (h *EventHandler) CreateEventHandler(ctx *gin.Context) {
 
-	var newEvent schema.Event
-	if err := ctx.ShouldBindJSON(&newEvent); err != nil {
+	var dto schema.EventPOSTandPUTDTO
+	if err := ctx.ShouldBindJSON(&dto); err != nil {
 		helpers.SendError(ctx, http.StatusNotFound, "Error de busqueda en la base de datos", "Los datos del evento no cargaron o no se encontraron en la Base de datos")
 		return
 	}
 
-	createdEvent, err := h.service.CreateEvent(newEvent)
+	createdEvent, err := h.service.CreateEvent(dto)
 	if err != nil {
 		helpers.SendError(ctx, http.StatusInternalServerError, "Error interno del servidor", "Datos incorrectos ingresados en la creacion de atletas")
 		return
@@ -58,13 +58,13 @@ func (h *EventHandler) CreateEventHandler(ctx *gin.Context) {
 
 func (h *EventHandler) EditEventHandler(ctx *gin.Context) {
 
-	var newEvent schema.Event
-	if err := ctx.ShouldBindJSON(&newEvent); err != nil {
+	var dto schema.EventPOSTandPUTDTO 
+	if err := ctx.ShouldBindJSON(&dto); err != nil {
 		helpers.SendError(ctx, http.StatusNotFound, "Error de busqueda en la base de datos", "Los datos del evento no cargaron o no se encontraron en la Base de datos")
 		return
 	}
 
-	updatedEvent, err := h.service.CreateEvent(newEvent)
+	updatedEvent, err := h.service.CreateEvent(dto)
 	if err != nil {
 		helpers.SendError(ctx, http.StatusInternalServerError, "Error interno del servidor", "Datos incorrectos ingresados en la edicion de atletas")
 		return

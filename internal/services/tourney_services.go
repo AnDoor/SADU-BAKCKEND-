@@ -89,10 +89,10 @@ func (s *TourneyServices) CreateTourney(t schema.Tourney) (schema.Tourney, error
 	}
 
 	if len(t.Events) > 0 {
-		s.DB.Model(&t).Preload("Events").Preload("Disciplines").Association("Events").Append(t.Events)
+		s.DB.Model(&t).Preload("Events").Preload("Discipline").Association("Events").Append(t.Events)
 	}
 
-	s.DB.Preload("Events").Preload("Disciplines").First(&t, t.ID)
+	s.DB.Preload("Events").Preload("Discipline").First(&t, t.ID)
 	return t, nil
 }
 
@@ -116,7 +116,7 @@ func (s *TourneyServices) UpdateTourney(t schema.Tourney, ctx *gin.Context) (sch
 	}
 
 
-	err := s.DB.Preload("Events").Preload("Disciplines").First(&updateTourney, id).Error
+	err := s.DB.Preload("Events").Preload("Discipline").First(&updateTourney, id).Error
 
 	return updateTourney, err
 

@@ -153,3 +153,18 @@ type EventGetDTO struct {
 	ResponsableTeacher TeacherGetBareDTO    `json:"ResponsableTeacher"`
 	Discipline         DisciplineGetBareDTO `json:"Discipline"`
 }
+
+type EventPOSTandPUTDTO struct {
+	Name                 string     `json:"Name"`
+	Date                 time.Time  `json:"Date"`
+	Status               string     `json:"Status"`
+	Observation          string     `json:"Observation"`
+	Ubication            string     `json:"Ubication"`
+	HomePoints           uint8      `json:"HomePoints"`
+	OppositePoints       uint8      `json:"OppositePoints"`
+	HomeTeamID           RegularIDs `json:"HomeTeamID" binding:"required"`
+	OppositeTeamID       RegularIDs `json:"OppositeTeamID" binding:"required"`
+	TourneyID            RegularIDs `json:"TourneyID" binding:"required"`
+	ResponsableTeacherID RegularIDs `json:"ResponsableTeacherID" binding:"required"`
+	DisciplineID         RegularIDs `json:"DisciplineID" binding:"required"`
+}

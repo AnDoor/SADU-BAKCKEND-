@@ -66,8 +66,10 @@ func main() {
 	routes.RegisterTeacherRoutes(r.Group("/teachers", middlewares.AuthMiddleware()), teacherHandler)
 	routes.RegisterTeamRoutes(r.Group("/teams", middlewares.AuthMiddleware()), teamHandler)
 	routes.RegisterEventsRouters(r.Group("/events", middlewares.AuthMiddleware()), eventHandlers)
-	routes.RegisterUserRoutes(r.Group("/users",middlewares.AuthMiddleware()), userHandlers)
+	routes.RegisterUserRoutes(r.Group("/users"), userHandlers)
 	log.Println(" Server corriendo en http://localhost:8080")
 	r.Run(":8080")
 	println("Exitted")
 }
+
+

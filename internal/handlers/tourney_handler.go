@@ -41,7 +41,7 @@ func (h *TourneyHandler) GetTourneyByIdHandler(ctx *gin.Context) {
 	helpers.SendSucces(ctx, "Listing-Tourneys-By-ID-Succesfully", tourney)
 }
 
-func (h *TourneyHandler) CreateUniversityHandler(ctx *gin.Context) {
+func (h *TourneyHandler) CreateTourneyHandler(ctx *gin.Context) {
 	var dto schema.TourneyPOSTandPUTDTO
 
 	if err := ctx.ShouldBindJSON(&dto); err != nil {
@@ -75,7 +75,7 @@ func (h *TourneyHandler) UpdateTourneyHandler(ctx *gin.Context) {
 	var dto schema.TourneyPOSTandPUTDTO
 
 	if err := ctx.ShouldBindJSON(&dto); err != nil {
-		helpers.SendError(ctx, http.StatusNotFound, "Error interno del servidor", "El torneo no fue encontrado en la base de datos.")
+		helpers.SendError(ctx, http.StatusBadRequest, "JSON inválido", err.Error())
 		return
 	}
 	tourneyUpdate := schema.Tourney{
@@ -86,13 +86,13 @@ func (h *TourneyHandler) UpdateTourneyHandler(ctx *gin.Context) {
 		DisciplineID: dto.DisciplineID,
 	}
 
-	if dto.Events != nil {
+
 		for _, id := range dto.Events {
 			tourneyUpdate.Events = append(tourneyUpdate.Events, schema.Event{
 				Model: gorm.Model{ID: uint(id)},
 			})
 		}
-	}
+	
 	updatedTourney, err := h.service.UpdateTourney(tourneyUpdate, ctx)
 	if err != nil {
 		helpers.SendError(ctx, http.StatusInternalServerError, "Error interno del servidor", "El inesperado a la hora de editar torneo.")

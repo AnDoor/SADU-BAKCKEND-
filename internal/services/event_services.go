@@ -49,24 +49,38 @@ func (s *EventService) GetEvents(id uint, name, status string) ([]schema.EventGe
 	return dto, nil
 }
 
-func (s *EventService) CreateEvent(event schema.Event) (schema.Event, error) {
+func (s *EventService) CreateEvent(dto schema.EventPOSTandPUTDTO) (schema.Event, error) {
 	var tourney schema.Tourney
-	tx := s.DB.Begin()
 
-	if event.DisciplineID != tourney.DisciplineID {
+	if err := s.DB.First(&tourney, dto.TourneyID).Error; err != nil {
+		return schema.Event{}, fmt.Errorf("torneo no encontrado: %w", err)
+	}
+
+	if dto.DisciplineID != tourney.DisciplineID {
 		return schema.Event{}, fmt.Errorf("la disciplina del evento no coincide con la del torneo")
 	}
 
-	if err := tx.Create(&event).Error; err != nil {
-		tx.Rollback()
-		return schema.Event{}, err
+	event := schema.Event{
+		Name:                 dto.Name,
+		Date:                 dto.Date,
+		Status:               dto.Status,
+		Observation:          dto.Observation,
+		Ubication:            dto.Ubication,
+		HomePoints:           dto.HomePoints,
+		OppositePoints:       dto.OppositePoints,
+		HomeTeamID:           dto.HomeTeamID,
+		OppositeTeamID:       dto.OppositeTeamID,
+		TourneyID:            dto.TourneyID,
+		ResponsableTeacherID: dto.ResponsableTeacherID,
+		DisciplineID:         dto.DisciplineID,
 	}
 
-	if len(event.Athletes) > 0 {
-		if err := tx.Model(&event).Association("Athletes").Replace(event.Athletes); err != nil {
-			tx.Rollback()
-			return schema.Event{}, err
-		}
+	tx := s.DB.Begin()
+
+	if err := tx.Omit("HomeTeam", "OppositeTeam", "Tourney", "ResponsableTeacher", "Discipline", "Athletes").
+		Create(&event).Error; err != nil {
+		tx.Rollback()
+		return schema.Event{}, err
 	}
 
 	tx.Commit()
@@ -76,42 +90,43 @@ func (s *EventService) CreateEvent(event schema.Event) (schema.Event, error) {
 		Preload("Tourney").
 		Preload("ResponsableTeacher").
 		Preload("Discipline").
-		Preload("Athletes").
 		First(&event, event.ID)
 
 	return event, nil
 }
-func (s *EventService) EditEvent(ctx *gin.Context) (schema.Event, error) {
+func (s *EventService) EditEvent(ctx *gin.Context, dto schema.EventPOSTandPUTDTO) (schema.Event, error) {
 
 	id := ctx.Param("id")
 	var input schema.Event
-
+	var existingEvent schema.Event
+	if err := s.DB.First(&existingEvent, id).Error; err != nil {
+		return schema.Event{}, fmt.Errorf("evento no encontrado: %w", err)
+	}
 	if err := ctx.ShouldBindJSON(&input); err != nil {
 		return schema.Event{}, err
 	}
 
-	var existingEvent schema.Event
-	if err := s.DB.First(&existingEvent, id).Error; err != nil {
-		return schema.Event{}, err // Retornará gorm.ErrRecordNotFound si no existe
-	}
-
 	tx := s.DB.Begin()
-
-	err := tx.Model(&existingEvent).Omit("HomeTeam", "OppositeTeam", "Tourney", "ResponsableTeacher", "Discipline", "Athletes").
-		Updates(input).Error
+	err := tx.Model(&existingEvent).Omit("Athletes").Updates(map[string]interface{}{
+		"name":                   dto.Name,
+		"date":                   dto.Date,
+		"status":                 dto.Status,
+		"observation":            dto.Observation,
+		"ubication":              dto.Ubication,
+		"home_points":            dto.HomePoints,
+		"opposite_points":        dto.OppositePoints,
+		"home_team_id":           dto.HomeTeamID,
+		"opposite_team_id":       dto.OppositeTeamID,
+		"tourney_id":             dto.TourneyID,
+		"responsable_teacher_id": dto.ResponsableTeacherID,
+		"discipline_id":          dto.DisciplineID,
+	}).Error
 
 	if err != nil {
 		tx.Rollback()
 		return schema.Event{}, err
 	}
 
-	if input.Athletes != nil {
-		if err := tx.Model(&existingEvent).Association("Athletes").Replace(input.Athletes); err != nil {
-			tx.Rollback()
-			return schema.Event{}, err
-		}
-	}
-
 	tx.Commit()
 
 	s.DB.Preload("HomeTeam").
@@ -119,7 +134,6 @@ func (s *EventService) EditEvent(ctx *gin.Context) (schema.Event, error) {
 		Preload("Tourney").
 		Preload("ResponsableTeacher").
 		Preload("Discipline").
-		Preload("Athletes").
 		First(&existingEvent, id)
 
 	return existingEvent, nil
