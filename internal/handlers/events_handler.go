@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -29,7 +30,7 @@ func (h *EventHandler) GetEventsHandler(ctx *gin.Context) {
 	name := ctx.Query("name")
 	status := ctx.Query("status")
 
-	events, err := h.service.GetEvents(id,name, status)
+	events, err := h.service.GetEvents(id, name, status)
 
 	if err != nil {
 		helpers.SendError(ctx, http.StatusInternalServerError, "Error interno del servidor", "Ocurrió un problema inesperado al procesar la lista de Eventos.")
@@ -43,13 +44,14 @@ func (h *EventHandler) CreateEventHandler(ctx *gin.Context) {
 
 	var dto schema.EventPOSTandPUTDTO
 	if err := ctx.ShouldBindJSON(&dto); err != nil {
-		helpers.SendError(ctx, http.StatusNotFound, "Error de busqueda en la base de datos", "Los datos del evento no cargaron o no se encontraron en la Base de datos")
+		fmt.Printf("Error de binding: %v\n", err)
+		helpers.SendError(ctx, http.StatusBadRequest, "Datos inválidos", "El formato del JSON enviado es incorrecto o faltan campos obligatorios")
 		return
 	}
 
 	createdEvent, err := h.service.CreateEvent(dto)
 	if err != nil {
-		helpers.SendError(ctx, http.StatusInternalServerError, "Error interno del servidor", "Datos incorrectos ingresados en la creacion de atletas")
+		helpers.SendError(ctx, http.StatusInternalServerError, "Error interno del servidor", "No se pudo procesar la creación del evento en el servidor")
 		return
 	}
 
@@ -58,14 +60,17 @@ func (h *EventHandler) CreateEventHandler(ctx *gin.Context) {
 
 func (h *EventHandler) EditEventHandler(ctx *gin.Context) {
 
-	var dto schema.EventPOSTandPUTDTO 
+	var dto schema.EventPOSTandPUTDTO
+	
 	if err := ctx.ShouldBindJSON(&dto); err != nil {
+		fmt.Printf("Error de binding (JSON vacío o mal formado): %v\n", err)
 		helpers.SendError(ctx, http.StatusNotFound, "Error de busqueda en la base de datos", "Los datos del evento no cargaron o no se encontraron en la Base de datos")
 		return
 	}
 
-	updatedEvent, err := h.service.CreateEvent(dto)
+	updatedEvent, err := h.service.EditEvent(ctx,dto)
 	if err != nil {
+		fmt.Printf("Error en el servicio EditEvent: %v\n", err)
 		helpers.SendError(ctx, http.StatusInternalServerError, "Error interno del servidor", "Datos incorrectos ingresados en la edicion de atletas")
 		return
 	}

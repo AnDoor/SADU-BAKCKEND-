@@ -164,7 +164,7 @@ type EventPOSTandPUTDTO struct {
 	OppositePoints       uint8      `json:"OppositePoints"`
 	HomeTeamID           RegularIDs `json:"HomeTeamID" binding:"required"`
 	OppositeTeamID       RegularIDs `json:"OppositeTeamID" binding:"required"`
-	TourneyID            RegularIDs `json:"TourneyID" binding:"required"`
+	TourneyID            RegularIDs `json:"TourneyID"`
 	ResponsableTeacherID RegularIDs `json:"ResponsableTeacherID" binding:"required"`
 	DisciplineID         RegularIDs `json:"DisciplineID" binding:"required"`
 }

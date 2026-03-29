@@ -50,15 +50,15 @@ func (s *EventService) GetEvents(id uint, name, status string) ([]schema.EventGe
 }
 
 func (s *EventService) CreateEvent(dto schema.EventPOSTandPUTDTO) (schema.Event, error) {
-	var tourney schema.Tourney
+	// var tourney schema.Tourney
 
-	if err := s.DB.First(&tourney, dto.TourneyID).Error; err != nil {
-		return schema.Event{}, fmt.Errorf("torneo no encontrado: %w", err)
-	}
+	// if err := s.DB.First(&tourney, dto.TourneyID).Error; err != nil {
+	// 	return schema.Event{}, fmt.Errorf("torneo no encontrado: %w", err)
+	// }
 
-	if dto.DisciplineID != tourney.DisciplineID {
-		return schema.Event{}, fmt.Errorf("la disciplina del evento no coincide con la del torneo")
-	}
+	// if dto.DisciplineID != tourney.DisciplineID {
+	// 	return schema.Event{}, fmt.Errorf("la disciplina del evento no coincide con la del torneo")
+	// }
 
 	event := schema.Event{
 		Name:                 dto.Name,
@@ -97,29 +97,26 @@ func (s *EventService) CreateEvent(dto schema.EventPOSTandPUTDTO) (schema.Event,
 func (s *EventService) EditEvent(ctx *gin.Context, dto schema.EventPOSTandPUTDTO) (schema.Event, error) {
 
 	id := ctx.Param("id")
-	var input schema.Event
+
 	var existingEvent schema.Event
 	if err := s.DB.First(&existingEvent, id).Error; err != nil {
 		return schema.Event{}, fmt.Errorf("evento no encontrado: %w", err)
 	}
-	if err := ctx.ShouldBindJSON(&input); err != nil {
-		return schema.Event{}, err
-	}
 
 	tx := s.DB.Begin()
 	err := tx.Model(&existingEvent).Omit("Athletes").Updates(map[string]interface{}{
-		"name":                   dto.Name,
-		"date":                   dto.Date,
-		"status":                 dto.Status,
-		"observation":            dto.Observation,
-		"ubication":              dto.Ubication,
-		"home_points":            dto.HomePoints,
-		"opposite_points":        dto.OppositePoints,
-		"home_team_id":           dto.HomeTeamID,
-		"opposite_team_id":       dto.OppositeTeamID,
-		"tourney_id":             dto.TourneyID,
-		"responsable_teacher_id": dto.ResponsableTeacherID,
-		"discipline_id":          dto.DisciplineID,
+		"Name":                 dto.Name,
+		"Date":                 dto.Date,
+		"Status":               dto.Status,
+		"Observation":          dto.Observation,
+		"Ubication":            dto.Ubication,
+		"HomePoints":           dto.HomePoints,
+		"OppositePoints":       dto.OppositePoints,
+		"HomeTeamID":           dto.HomeTeamID,
+		"OppositeTeamID":       dto.OppositeTeamID,
+		"TourneyID":            dto.TourneyID,
+		"ResponsableTeacherID": dto.ResponsableTeacherID,
+		"DisciplineID":         dto.DisciplineID,
 	}).Error
 
 	if err != nil {
@@ -127,7 +124,9 @@ func (s *EventService) EditEvent(ctx *gin.Context, dto schema.EventPOSTandPUTDTO
 		return schema.Event{}, err
 	}
 
-	tx.Commit()
+	if err := tx.Commit().Error; err != nil {
+		return schema.Event{}, err
+	}
 
 	s.DB.Preload("HomeTeam").
 		Preload("OppositeTeam").

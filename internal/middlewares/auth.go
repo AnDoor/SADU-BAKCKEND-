@@ -31,11 +31,10 @@ func AuthMiddleware() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-
-		parts := strings.Split(tokenString, "Bearer ")
-		if len(parts) > 1 {
-			tokenString = parts[1]
+		if strings.HasPrefix(strings.ToLower(tokenString), "bearer ") {
+			tokenString = tokenString[7:] 
 		}
+		tokenString = strings.TrimSpace(tokenString)
 
 		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 			return jwtKey, nil
@@ -64,6 +63,9 @@ func AuthMiddleware() gin.HandlerFunc {
 						c.Next()
 						return
 					}
+					c.JSON(http.StatusForbidden, gin.H{"error": "No tienes permiso para acceder a este perfil"})
+					c.Abort()
+					return
 				}
 			}
 		} else {
