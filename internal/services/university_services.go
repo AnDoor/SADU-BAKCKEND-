@@ -38,6 +38,7 @@ func (s *UniversityServices) GetAllUniversity(name string, local string) ([]sche
 		universitiesBareDTO = append(universitiesBareDTO, schema.UniversityGetBareDTO{
 			ID:   schema.RegularIDs(university.ID),
 			Name: university.Name,
+			Local: university.Local,
 		})
 	}
 
