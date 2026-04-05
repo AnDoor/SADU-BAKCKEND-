@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"uneg.edu.ve/servicio-sadu-back/config"
+	"uneg.edu.ve/servicio-sadu-back/helpers"
 	"uneg.edu.ve/servicio-sadu-back/schema"
 )
 
@@ -23,7 +24,7 @@ func NewAthleteService() *AthleteService {
 
 func GetAllAthletes(name, lastname, govID string) ([]schema.AthleteDTO, error) {
 	var athletes []schema.Athlete
-	query := config.DB.Model(&schema.Athlete{}).Omit("Discipline")
+	query := config.DB.Model(&schema.Athlete{})
 
 	if name != "" {
 		query = query.Where("first_names LIKE ?", "%"+name+"%")
@@ -34,10 +35,13 @@ func GetAllAthletes(name, lastname, govID string) ([]schema.AthleteDTO, error) {
 	if govID != "" {
 		query = query.Where("gov_id LIKE ?", "%"+govID+"%")
 	}
+
 	if err := query.Find(&athletes).Error; err != nil {
 		return nil, err
 	}
-
+	if err := query.Preload("Disciplines").Find(&athletes).Error; err != nil {
+		return nil, err
+	}
 	athleteDTO := make([]schema.AthleteDTO, len(athletes))
 	for i, value := range athletes {
 		athleteDTO[i] = schema.AthleteDTO{
@@ -50,6 +54,7 @@ func GetAllAthletes(name, lastname, govID string) ([]schema.AthleteDTO, error) {
 			Email:       value.Email,
 			Enrolled:    value.Enrolled,
 			Regular:     value.Regular,
+			Disciplines: helpers.MapDisciplines(value.Disciplines),
 		}
 	}
 	return athleteDTO, nil

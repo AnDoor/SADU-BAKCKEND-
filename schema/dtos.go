@@ -27,7 +27,7 @@ type AthleteDTO struct {
 	Gender       Gender     `json:"Gender"`
 	Enrolled     bool       `json:"Enrolled"`
 	Regular      bool       `json:"Regular"`
-	DisciplineID RegularIDs `json:"DisciplineID"`
+	Disciplines []DisciplineGetBareDTO `json:"Disciplines"`
 }
 
 type MajorGetDTO struct {

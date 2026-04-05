@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 	"strconv"
@@ -9,6 +8,7 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"uneg.edu.ve/servicio-sadu-back/helpers"
 )
 
 var jwtKey = []byte(os.Getenv("SECRET_KEY"))
@@ -27,12 +27,12 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 		tokenString := c.GetHeader("Authorization")
 		if tokenString == "" {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Token no proporcionado"})
+			helpers.SendError(c, http.StatusUnauthorized,"Error", "Token no proporcionado")
 			c.Abort()
 			return
 		}
 		if strings.HasPrefix(strings.ToLower(tokenString), "bearer ") {
-			tokenString = tokenString[7:] 
+			tokenString = tokenString[7:]
 		}
 		tokenString = strings.TrimSpace(tokenString)
 
@@ -41,13 +41,13 @@ func AuthMiddleware() gin.HandlerFunc {
 		})
 
 		if err != nil || !token.Valid {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+			helpers.SendError(c, http.StatusUnauthorized,"Error", err.Error())
 			c.Abort()
 			return
 		}
 
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-			fmt.Printf("CLAIMS EXTRAÍDOS: ID=%v, User=%v\n", claims["user_id"], claims["username"])
+			//fmt.Printf("CLAIMS EXTRAÍDOS: ID=%v, User=%v\n", claims["user_id"], claims["username"])
 			userID := uint(claims["user_id"].(float64))
 			username := claims["username"].(string)
 			c.Set("userId", userID)
@@ -63,13 +63,13 @@ func AuthMiddleware() gin.HandlerFunc {
 						c.Next()
 						return
 					}
-					c.JSON(http.StatusForbidden, gin.H{"error": "No tienes permiso para acceder a este perfil"})
+					helpers.SendError(c, http.StatusForbidden, "Error", "No tienes permiso para acceder a este perfil")
 					c.Abort()
 					return
 				}
 			}
 		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "invalid token claims"})
+			helpers.SendError(c, http.StatusInternalServerError, "Error", "invalid token claims")
 			c.Abort()
 			return
 		}

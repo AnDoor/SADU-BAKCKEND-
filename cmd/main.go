@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -18,7 +19,10 @@ func main() {
 	config.ConnectDB()
 	config.SyncDB()
 	db := config.DB
-
+	 port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
 	athleteService := services.AthleteService{DB: db}
 	athleteHandler := handlers.NewAthleteHandler(&athleteService)
 
@@ -67,8 +71,8 @@ func main() {
 	routes.RegisterTeamRoutes(r.Group("/teams", middlewares.AuthMiddleware()), teamHandler)
 	routes.RegisterEventsRouters(r.Group("/events"), eventHandlers)
 	routes.RegisterUserRoutes(r.Group("/users"), userHandlers)
-	log.Println(" Server corriendo en http://localhost:8080")
-	r.Run(":8080")
+	log.Println(" Server corriendo en http://localhost:" + port)
+	r.Run(":" + port)
 	println("Exitted")
 }
 
